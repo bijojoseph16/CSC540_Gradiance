@@ -1,2 +1,2 @@
 # CSC540_Gradiance
-Gradiance like application for CSC540
+Gradiance like application for CSC540.
