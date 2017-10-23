@@ -1,0 +1,80 @@
+/*alter table course add course_level varchar(30);
+alter table course add max_students integer;
+
+/*alter table course modify course_id varchar(30) ;
+alter table course add c_id integer primary key;
+
+/*
+insert into ug values(1,'Freshman');
+
+/*
+insert into student values (1,'Tom', 'Regan', 'tregan', 'tregan');
+insert into student values (2,'Jenelle', 'Mick', 'jmick', 'jmick');
+insert into pg values(2,0);
+insert into student values (3,'Michal','Fisher','mfisher','mfisher');
+insert into ug values(3,'Senior');
+insert into student values (4,'Joseph','Anderson','jander','jander');
+insert into ug values (4,'Senior');
+insert into student values (5,'Jitendra','Harlalka','jharla','jharla');
+insert into pg values (5,0);
+insert into student values (6,'Aishwarya','Neelakanthan','aneela','aneela');
+insert into pg values (6,1);
+insert into student values (7,'Mary','Jones','mjones','mjones');
+insert into pg values (7,1);
+insert into student values (8,'James','Moyer','jmoyer','jmoyer');
+insert into pg values (8,0);
+
+
+
+/*
+alter table student add userId varchar(64) not null; alter table student add password varchar(64) not null; 
+alter table professor add userId varchar(64) not null; alter table professor add password varchar(64) not null; 
+
+/*create table parameter(
+question_id integer,
+param_id integer,
+primary key(question_id, param_id),
+foreign key (question_id)
+references question
+on delete cascade,
+parameters varchar(4000),
+answer varchar(4000)
+);
+
+/*create table question(
+question_id integer primary key,
+text varchar(4000) not null,
+solution varchar(4000) not null,
+question_level integer not null,
+hint varchar(4000) not null
+);
+
+/*create table duration(
+start_date date,
+end_date date,
+primary key(start_date,end_date)
+);
+
+
+/*
+create table professor(
+professor_id integer primary key,
+firstname varchar(30) not null,
+lastname varchar(30) not  null
+);
+
+create table student
+student_id integer primary key,
+firstname varchar(30) not null,
+lastname varchar(30) not null
+);
+
+create table ug(
+student_id integer primary key,
+foreign key (student_id) 
+references student
+on delete cascade,
+
+year varchar(20) not null);
+*/
+
