@@ -14,18 +14,19 @@ public class Login {
             System.out.println("2. Exit");
             System.out.print("Choice : ");
             try {
-            PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.getstudents);
-            ResultSet rs=pstmt.executeQuery();
-            
-            while(rs.next()) {
-            	
-            	System.out.println(rs.getString(2));
-            	
-            	
-            }
-            }
-            catch(SQLException e) {
-            	e.printStackTrace();
-            }
+                PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.getstudents);
+                ResultSet rs=pstmt.executeQuery();
+                
+                while(rs.next()) {
+                	
+                	System.out.println(rs.getString(2));
+                	
+                	
+                }
+                }
+                catch(SQLException e) {
+                	e.printStackTrace();
+                }
+           
     }
 }
