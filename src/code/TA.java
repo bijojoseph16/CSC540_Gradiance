@@ -21,9 +21,7 @@ public class TA{
 		
 		 case 2: TA.showCourse();
 			 
-		 case 3: TA.logout();
-			 
-		 
+		 case 3: TA.logout();	 
 		 
 		 }
 	}
