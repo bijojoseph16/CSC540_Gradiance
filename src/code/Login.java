@@ -45,20 +45,18 @@ public class Login {
 		        	int i=results.getInt("prof_exists");
 		        	if(i==1)
 		        	{
-		        		JOptionPane.showMessageDialog(null, "Professor-  Username and Password exists");
-		        	 	
+		        	 	System.out.println("Professor-  Username and Password exists");
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getInstructorByUIdPass);
 		        		psInst.setString(1,username);
 			        	psInst.setString(2,password);
-			        	showResultsSet(psInst.executeQuery());
+			        showResultsSet(psInst.executeQuery());
 			        	ResultSet rs=psInst.executeQuery();
-			        	while(rs.next()) {
-			        		int professorId = rs.getInt("professor_id");
-			        		Instructor.showHomePage();
-			        	}	
+			        rs.next();
+			        	int professorId = rs.getInt("professor_id");
+			        	Instructor.showHomePage();	
 		        	}
 		        	else{
-		        		JOptionPane.showMessageDialog(null, "Incorrect Username or Password ");
+		        		System.out.println("Incorrect Username or Password ");
 		        		Login.startPage(ip);
 		        	}
 		        	
@@ -77,20 +75,19 @@ public class Login {
 		        	int i=results.getInt("ta_exists");
 		        	if(i==1)
 		        	{
-		        		JOptionPane.showMessageDialog(null, "TA -  Username and Password exists");
-		        	 	
+		        	 	System.out.println("TA -  Username and Password exists");
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getTAByUIdPass);
 		        		psInst.setString(1,username);
 			        	psInst.setString(2,password);
-			        	showResultsSet(psInst.executeQuery());
+			        showResultsSet(psInst.executeQuery());
 			        	ResultSet rs=psInst.executeQuery();
-			        	while(rs.next()) {
-			        		int TaId = rs.getInt("Student_id");
-			        		TA.showHomePage(ip);
-			        	}	
+			        	rs.next(); 
+			        	int TaId = rs.getInt("Student_id");
+			        	TA.showHomePage(ip);
+			        	
 		        	}
 		        	else{
-		        		JOptionPane.showMessageDialog(null, "Incorrect Username or Password ");
+		        		System.out.println("Incorrect Username or Password ");
 		        		Login.startPage(ip);
 		        	}
 	
@@ -108,22 +105,21 @@ public class Login {
 		        	ResultSet results = ps.executeQuery();	
 		        results.next();
 		        	int i=results.getInt("exists");
-		        	if(i==1)
+		        	if(i == 1)
 		        	{
-		        		JOptionPane.showMessageDialog(null, "Student -  Username and Password exists");
-		        	 	
+		        	 	System.out.println("Student -  Username and Password exists");
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getStudentByUIdPass);
 		        		psInst.setString(1,username);
 			        	psInst.setString(2,password);
 			        	showResultsSet(psInst.executeQuery());
 			        	ResultSet rs=psInst.executeQuery();
-			        	while(rs.next()) {
-			        		int StudentId = rs.getInt("Student_id");
-			        		Student.showHomePage(ip, StudentId);
-			        	}	
+			        	rs.next();
+			        	int StudentId = rs.getInt("Student_id");
+			        	Student.showHomePage(ip, StudentId);
 		        	}
 		        	else{
-		        		JOptionPane.showMessageDialog(null, "Incorrect Username or Password ");
+		        		
+		        		System.out.println("Incorrect Username or Password ");
 		        		Login.startPage(ip);
 		        	}
 	
