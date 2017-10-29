@@ -34,8 +34,9 @@ public class Connect {
             
             
             } catch (Throwable oops) {;
-                oops.printStackTrace();
-                oops.getMessage();
+                //oops.printStackTrace();
+                //oops.getMessage();
+                System.out.println("invalid username/password; logon denied");
                 getConnection();
             }
         }
