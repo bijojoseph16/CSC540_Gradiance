@@ -52,8 +52,8 @@ public class Login {
 			        showResultsSet(psInst.executeQuery());
 			        	ResultSet rs=psInst.executeQuery();
 			        rs.next();
-			        	int professorId = rs.getInt("professor_id");
-			        	Instructor.showHomePage();	
+			        	int instructorId = rs.getInt("professor_id");
+			        	Instructor.showHomePage(ip, instructorId);	
 		        	}
 		        	else{
 		        		System.out.println("Incorrect Username or Password ");

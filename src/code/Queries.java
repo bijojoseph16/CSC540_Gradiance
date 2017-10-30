@@ -4,7 +4,7 @@ public class Queries{
 	static final String getstudents="Select * from student";
 	static final String checkInstructor = " select count(*) as \"prof_exists\" from Professor where userid=? and password=?";
 	static final String getInstructorByUIdPass = " select * from Professor where userid=? and password=?";
-	
+	static final String getInstructorByUId = "select * from  Professor where professor_id=? ";
 	
 	static final String checkStudent = " select count(*) as \"exists\" from student where userid=? and password=?";
 	static final String getStudentByUIdPass = " select * from student where userid=? and password=?";

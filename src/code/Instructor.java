@@ -1,12 +1,16 @@
 package code;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
+
+import dbconnect.Connect;
 
 public class Instructor {
 
      /*
       * Show Instructor homepage with options
       */
-     public static void showHomePage() {
+     public static void showHomePage(Scanner ip, int instructorID) {
          System.out.println("*****Instructor Homepage******");
          System.out.println("1.View Profile");
          System.out.println("2. View Course");
@@ -18,22 +22,92 @@ public class Instructor {
          System.out.println("6. Search Question in Question Bank");
          System.out.println("7. Add Question in Question Bank");
          System.out.println("8. Logout");
+         try {
+             //Take User input
+             System.out.print("Choice : ");
+             int choice = Integer.parseInt(ip.next());
+             
+             if(1 == choice) {
+                 Instructor.viewProfile(ip, instructorID);
+                 
+             } else if(2 == choice){
+                 Instructor.viewCourse(ip);
+                 
+             } else if(3 == choice) {
+                 Instructor.addCourse(ip);
+                 
+             } else if(4 == choice) {
+                 Instructor.enrollStudent();
+                 
+             } else if(5 == choice) {
+                 Instructor.dropStudent();
+                 
+             } else if(6 == choice) {
+                 Instructor.searchQuestionInQB();
+                 
+             } else if(7 == choice) {
+                 Instructor.addQuestionInQB();
+                 
+             } else if(8 == choice) {
+                 Login.startPage(ip);
+                 
+             }
+             else {
+                 System.out.println("Invalid input");
+                 Instructor.showHomePage(ip, instructorID);
+                 
+             }
+             
+     }catch(Exception e) {
+         
+     }
+
      }
 
      /**********Functions called from showHomePage*********************/
      
      /*
-      * Show Instructor homepage with options
+      * Show Instructor Profile
       */
-     public static void viewProfile() {
-         //Show First Name, lastname and employee ID
-         System.out.println("Enter 0 to go back");
+     public static void viewProfile(Scanner ip, int instructorID) {
+         //Show First Name, Last Name and Employee ID         
+         System.out.println("*************** Instructor Profile ****************");
+         System.out.println("Instructor Id: " + instructorID);
+         
+         try {
+             //set this values using PreparedStatement for the instructor
+             PreparedStatement ps = Connect.getConnection().prepareStatement(Queries.getInstructorByUId);
+             ps.setInt(1,instructorID);
+             ResultSet results = ps.executeQuery();  
+             results.next();
+             System.out.println("Firstname: " + results.getString("firstname"));
+             System.out.println("Lastname: " + results.getString("lastname"));
+             System.out.println("Username: " + results.getString("userid"));
+             Connect.close(ps);
+             Connect.close(results);
+  
+             //Take Use input
+             System.out.println("Enter 0 Go Back");
+             System.out.print("Choice: ");
+             int choice = Integer.parseInt(ip.next());
+             
+             if(0 == choice) {
+                 Instructor.showHomePage(ip, instructorID);
+             }else {
+                 System.out.println("Invalid input.");
+                 Instructor.viewProfile(ip, instructorID);
+             }
+             
+         }catch(Exception e) {
+             e.printStackTrace();
+         }
+
      }
      
      /*
       * Show all the courses or Add a new Course
       */
-     public static void viewCourse() {
+     public static void viewCourse(Scanner ip) {
          //Ask course ID 
          System.out.println("Enter Course ID");
          // if valid show course details
@@ -75,23 +149,21 @@ public class Instructor {
      /*
       * Instructor can search a question 
       */
-     public static void searchQuestioninQB() {
+     public static void searchQuestionInQB() {
          
      }
      
      /*
       * Instructor can add a question 
       */
-     public static void addQuestioninQB() {
+     public static void addQuestionInQB() {
          
      }
 
      /*
       * 
       */
-     public static void logOut() {
-         
-     }
+ 
      
      /**********Functions called from viewCourse*****************/
      

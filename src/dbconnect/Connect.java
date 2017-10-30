@@ -94,7 +94,7 @@ public class Connect {
     }
 
     //Close Resultset
-    static void close(ResultSet rs) {
+    public static void close(ResultSet rs) {
         if(rs != null) {
             try {
                 rs.close();
