@@ -1,13 +1,19 @@
 package code;
 
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import javafx.util.Pair;
 
 import dbconnect.Connect;
 
@@ -17,7 +23,7 @@ public class Student {
 	public static void showHomePage(Scanner ip, int studentId) {
 		
 		System.out.println("*****Student Homepage******");
-        System.out.println("1.View Profile");
+        System.out.println("1. View Profile");
         System.out.println("2. View Course");
         System.out.println("3. Logout");
         
@@ -124,7 +130,7 @@ public class Student {
 				
 				//Take Use input
 				System.out.println("0. Go Back");
-				System.out.println("1. Select a course Id to view details");
+				System.out.println("Or Select a course Id to view details");
 				System.out.print("Choice: ");
 				
 				
@@ -157,7 +163,7 @@ public class Student {
 				
 				//Take Use input
 				System.out.println("0. Go Back");
-				System.out.println("1. Select a course Id to view details");
+				System.out.println("Or Select a course Id to view details");
 				System.out.print("Choice: ");
 				
 				
@@ -214,7 +220,7 @@ public class Student {
 		
 		try {
 
-			PreparedStatement psPgCourses = Connect.getConnection().prepareStatement(Queries.getUgStudentPastHwforCourse);
+			PreparedStatement psPgCourses = Connect.getConnection().prepareStatement(Queries.getStudentPastHwforCourse);
 			psPgCourses.setInt(1, studentId);
 			psPgCourses.setInt(2, courseId);
 			showResultsSet(psPgCourses.executeQuery());
@@ -244,14 +250,32 @@ public class Student {
 		
 		try {
 
-			PreparedStatement psPgCourses = Connect.getConnection().prepareStatement(Queries.getPgStudentCourses);
-			psPgCourses.setInt(1, studentId);
+			PreparedStatement psPgCourses = Connect.getConnection().prepareStatement(Queries.getStudentCurrtHwforCourse);
+			psPgCourses.setInt(1, studentId); 
+			psPgCourses.setInt(2, courseId);
+			psPgCourses.setInt(3, studentId);
+			psPgCourses.setInt(4, courseId);
 			showResultsSet(psPgCourses.executeQuery());
 			ResultSet resPgCourses = psPgCourses.executeQuery();
 			
-			List<Integer> hwList = new ArrayList<Integer>();
+			Map<Integer, Integer> hwMap = new HashMap<Integer, Integer>();
+			Map<Integer,Integer> exRets = new HashMap<Integer,Integer>();
+			
 			while(resPgCourses.next()) {
-				hwList.add(resPgCourses.getInt("c_id"));	
+				
+				
+				CallableStatement cs2 = Connect.getConnection().prepareCall(Queries.getStudentScoreQuery);
+		        cs2.setInt(1, studentId);
+		        cs2.setInt(2, courseId);
+		        cs2.setInt(3, resPgCourses.getInt("hw_id"));
+		        cs2.registerOutParameter(4, Types.INTEGER);
+		        cs2.execute();
+		        System.out.println("Curent Score for this HW: " + cs2.getInt(4));
+		        cs2.close();        
+		        
+		        //add the current hws in the list and no. of retries left
+		        hwMap.put(resPgCourses.getInt("hw_id"), resPgCourses.getInt("retries_left"));
+		        exRets.put(resPgCourses.getInt("hw_id"), resPgCourses.getInt("retries"));
 			}
 			
 			System.out.println("Press 0 to Go Back");
@@ -260,8 +284,10 @@ public class Student {
 			int choice = ip.nextInt();
 			if(0 == choice) {
 				Student.showCourseHW(ip, studentId, courseId);
-			}else if(hwList.contains(choice)) {
-				
+			}else if(hwMap.containsKey(choice) && hwMap.get(choice) > 0) {
+					
+					System.out.println("Opening HW " + choice + " for Attempt # " + exRets.get(choice));
+					Student.attemptHW(ip, studentId, courseId, choice, exRets.get(choice));
 			}else {
 				System.out.println("Invalid Input. Enter your choice again");
 				Student.showCurrHW(ip, studentId, courseId);
@@ -269,13 +295,115 @@ public class Student {
 		
 		}catch(Exception e) {
 			
-			
+			e.printStackTrace();
 		}
 		
 	}
 	
 	//attempt Given HW
-	public static void attemptHW(Scanner ip, int studentId, int courseId) {
+	public static void attemptHW(Scanner ip, int studentId, int courseId, int ex_id, int attemptNo) {
+		
+		System.out.println("************* Attempt HW " + ex_id + "****************");
+
+		try {
+			
+			PreparedStatement exDets = Connect.getConnection().prepareStatement(Queries.fetchExDetails);
+			exDets.setInt(1, ex_id); 
+			ResultSet resExDets = exDets.executeQuery();
+			resExDets.next();
+			
+			int pts_per_correct = resExDets.getInt("pts_for_correct");
+			int pts_per_wrong = resExDets.getInt("pts_for_incorrect");
+			int num_ques = resExDets.getInt("num_questions");
+			String s_policy = resExDets.getString("scoring_policy");
+			int retries = resExDets.getInt("retries");
+			String mode = resExDets.getString("ex_mode");
+					
+			PreparedStatement exQues = Connect.getConnection().prepareStatement(Queries.fetchExQuestions);
+			exQues.setInt(1, ex_id); 
+			//showResultsSet(exQues.executeQuery());
+			ResultSet resExQues = exQues.executeQuery();
+			
+			int q_cnt = 0;
+			Map<Integer, Map<String, String>> q_details  = new HashMap<Integer, Map<String, String> >();
+			int grade = 0;
+			
+			while(resExQues.next()) {
+				Map<String, String> q_det = new HashMap<String, String>();
+				
+				q_cnt += 1;
+				
+				//show question 
+				System.out.println(q_cnt + ") " + resExQues.getString("text"));
+				System.out.println("Parameters: " + resExQues.getString("parameters"));
+				
+				//Get response
+				System.out.println("Enter you Answer (comma separated answer of more than one apply): ");
+				String yourAnswer = ip.next();
+				
+				//Store student response
+				q_det.put("text", resExQues.getString("text"));
+				q_det.put("params", resExQues.getString("parameters"));
+				q_det.put("answer", resExQues.getString("answer"));
+				q_det.put("s_answer", yourAnswer);
+				q_det.put("a_status", (yourAnswer.equalsIgnoreCase(resExQues.getString("answer"))?"Correct":"Incorrect Answer"));
+				q_det.put("solution", resExQues.getString("solution"));
+				q_det.put("hint", resExQues.getString("hint"));
+				q_det.put("level", resExQues.getString("question_level"));
+				
+				//evaluate
+				if (yourAnswer.equalsIgnoreCase(resExQues.getString("answer"))) {
+					grade += pts_per_correct;
+				}else {
+					grade += pts_per_wrong;
+				}
+				q_details.put(q_cnt, q_det);	
+				System.out.println();
+			}
+			
+			System.out.println("Generating your score...");
+			System.out.println("Updating your submission ...");
+			PreparedStatement exSubmit = Connect.getConnection().prepareStatement(Queries.updateStudentExeriseSubmission);
+			exSubmit.setInt(1, studentId);
+			exSubmit.setInt(2, ex_id);
+			exSubmit.setInt(3, attemptNo);
+			exSubmit.setInt(4, grade);
+			exSubmit.executeQuery();
+			
+			System.out.println("----------------------------------------------------------------------------------------");
+			System.out.println("Score for this Attempt is: " + grade);
+			
+			System.out.println("Review HW Below");
+			Iterator it = q_details.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry pair = (Map.Entry)it.next();
+		        Map<Integer, String> vals = (Map<Integer, String>) pair.getValue();
+		        System.out.println(pair.getKey() + ") " 
+		        		+ vals.get("text") + 
+		        		"\nParameters: " + vals.get("params") +
+		        		" Answer: " + vals.get("answer") + 
+		        		" Your Answer: " + vals.get("s_answer") +
+		        		" Status: " + vals.get("a_status") +
+		        		" Solution: " + vals.get("solution") +
+		        		" Hint: " + vals.get("hint"));
+		        it.remove(); // avoids a ConcurrentModificationException
+		        System.out.println();
+		    }
+		    System.out.println("----------------------------------------------------------------------------------------");
+		    
+		    
+		    
+			System.out.println("Press 0 to Go Back");
+			
+			int choice = ip.nextInt();
+			System.out.println("Exiting HW Portal");
+			Student.showCourseHW(ip, studentId, courseId);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 	

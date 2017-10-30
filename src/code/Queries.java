@@ -16,14 +16,78 @@ public class Queries{
 	static final String getPgStudentCourses = " select c.c_id, c.course_id, c.course_name from pg_enrolled pge, course c where pge.student_id=? "
 												+ "and pge.course_id = c.c_id";
 	
-	static final String getUgStudentPastHwforCourse = "select sse.ex_id, sse.attempt_number, sse.points_earned, sse.time_of_submission"
-			+ " from student_submits_exercise sse, course_has_exercise c, ug_enrolled p where"
+	static final String getStudentPastHwforCourse = "select sse.ex_id, sse.attempt_number, sse.points_earned, sse.time_of_submission"
+			+ " from student_submits_exercise sse, course_has_exercise c, enrollments p where"
 			+ " sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=? and p.course_id=?";
-	
-	static final String getPgStudentPastHwforCourse = "select sse.ex_id, sse.attempt_number, sse.points_earned, sse.time_of_submission"
-			+ " from student_submits_exercise sse, course_has_exercise c, pg_enrolled p where"
-			+ " sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=? and p.course_id=?";
+		
+	static final String getStudentCurrtHwforCourse = "select e.ex_id as HW_ID, e.exercise_name, e.num_questions, e.pts_for_correct, e.pts_for_incorrect, e.scoring_policy, e.ex_mode, e.retries, "
+			+ "(e.retries - (select count(*) from student_submits_exercise sse, course_has_exercise c1, enrollments p1 where sse.ex_id = c1.exercise_id "
+			+ "and c1.course_id = p1.course_id and sse.ex_id = e.ex_id and p1.student_id=? and p1.course_id=?)) as retries_left "
+			+ "from exercise e, course_has_exercise c, enrollments p, exercise_has_duration exd "
+			+ "where e.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=? and p.course_id=?"
+			+ "and e.ex_id = exd.ex_id and exd.startdate < to_timestamp(sysdate) and exd.enddate > to_timestamp(sysdate)";
 
+	static final String getStudentScoreQuery = "DECLARE  " + 
+			"   ss_policy varchar(20); " + 
+			"   f_score number; " + 
+			"   max_score integer; " + 
+			"   last_score integer; " + 
+			"   avg_score number; " + 
+			"   ee_id integer; " + 
+			"   ss_id integer; " + 
+			"   cc_id integer; " +  
+			"begin " + 
+			"   ss_id := ?; " + 
+			"   cc_id := ?; " + 
+			"   ee_id := ?; " + 
+			"   SELECT scoring_policy " + 
+			"   into ss_policy " + 
+			"     FROM exercise " + 
+			"     WHERE ex_id = ee_id; " + 
+			"    select max(sse.points_earned) into max_score " + 
+			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
+			"    select sse.points_earned into last_score " + 
+			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id and " + 
+			"    sse.attempt_number = (select max(sse1.attempt_number) " + 
+			"    from student_submits_exercise sse1, course_has_exercise c1, enrollments p1 " + 
+			"    where sse1.ex_id = c1.exercise_id and c1.course_id = p1.course_id and p1.student_id=ss_id and p1.course_id=cc_id and sse1.ex_id = ee_id);     " +  
+			"    select avg(sse.points_earned) into avg_score " + 
+			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
+			"   IF ss_policy = 'Latest_Attempt' THEN " + 
+			"      f_score := last_score; " + 
+			"   ELSIF ss_policy = 'Average_Attempt' THEN " + 
+			"      f_score := avg_score; " + 
+			"   ELSIF ss_policy = 'Maximum_Score' THEN " + 
+			"      f_score := max_score; " + 
+			"   END IF; " +
+			"   ? := f_score; " + 
+			"END;";
+	
+	static final String fetchExDetails = "select * from exercise where ex_id = ?";
+	
+	static final String fetchExQuestions = "select ehq.question_id, q.text, p.parameters, p.answer, q.solution, q.question_level, q.hint "
+			+ "from exercise_has_question ehq, question q, parameter p "
+			+ "where ehq.ex_id=? and ehq.question_id = q.question_id and q.question_id = p.question_id "
+			+ "and (p.param_id = (select floor(dbms_random.value(1,4)) as num from dual) or p.param_id = 0)";	
+	
+	static final String updateStudentExeriseSubmission = "INSERT INTO STUDENT_SUBMITS_EXERCISE (" +  
+			"  STUDENT_ID, " + 
+			"  EX_ID, " + 
+			"  ATTEMPT_NUMBER, " + 
+			"  POINTS_EARNED, " + 
+			"  TIME_OF_SUBMISSION " + 
+			")" + 
+			"VALUES " + 
+			"(" + 
+			"  ?," + 
+			"  ?," + 
+			"  ?," + 
+			"  ?," + 
+			"  to_timestamp(sysdate)" + 
+			")";
 	
 	static final String checkTA = "Select count(*) as \"ta_exists\" from student s, pg p where userid=? and password=? and s.student_id = p.student_id and p.ta_course <> 0";
 	static final String getTAByUIdPass = "Select * from student s, pg p where userid=? and password=? and s.student_id = p.student_id and p.ta_course <> 0";
