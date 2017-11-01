@@ -47,7 +47,7 @@ public class Login {
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getInstructorByUIdPass);
 		        		psInst.setString(1,username);
 			        	psInst.setString(2,password);
-			        showResultsSet(psInst.executeQuery());
+			            showResultsSet(psInst.executeQuery());
 			        	ResultSet rs=psInst.executeQuery();
 			        rs.next();
 			        	int instructorId = rs.getInt("professor_id");

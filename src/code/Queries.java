@@ -104,8 +104,12 @@ public class Queries{
 	
 	static final String checkTA = "Select count(*) as \"ta_exists\" from student s, pg p where userid=? and password=? and s.student_id = p.student_id and p.ta_course <> 0";
 	static final String getTAByUIdPass = "Select * from student s, pg p where userid=? and password=? and s.student_id = p.student_id and p.ta_course <> 0";
-	
-	
+
+	//Query to get course information given course ID
+	static final String getCourseByCourseID = "Select * from course where course_id = ?";
+    static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
+    static final String courseExists = "Select count(*) as \"course_exists\" from course where course_id = ?";
+    
 	/*Take care when adding a question to an exercise that the question picked to add actually belongs to one of the topics from that course
 	 * (select unique t.question_id from topic_has_question t, course_has_exercise c, course_has_topic ct 
    where c.course_id = ct.course_id and ct.topic_id = t.topic_id and c.exercise_id = EX_ID)*/
@@ -155,4 +159,5 @@ public class Queries{
 					showResultsSet(rs); 
 	 
 	 * */
+
 }
