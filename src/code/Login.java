@@ -3,8 +3,6 @@ import java.sql.*;
 
 import java.util.*;
 
-import javax.swing.JOptionPane;
-
 import dbconnect.Connect;
 
 public class Login {
