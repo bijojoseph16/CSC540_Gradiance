@@ -92,5 +92,9 @@ public class Queries{
 	static final String checkTA = "Select count(*) as \"ta_exists\" from student s, pg p where userid=? and password=? and s.student_id = p.student_id and p.ta_course <> 0";
 	static final String getTAByUIdPass = "Select * from student s, pg p where userid=? and password=? and s.student_id = p.student_id and p.ta_course <> 0";
 	
-	
+	//Query to get course information given course ID
+	static final String getCourseByCourseID = "Select * from course where course_id = ?";
+    static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
+    static final String courseExists = "Select count(*) as \"course_exists\" from course where course_id = ?";
+
 }
