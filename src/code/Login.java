@@ -3,8 +3,6 @@ import java.sql.*;
 
 import java.util.*;
 
-import javax.swing.JOptionPane;
-
 import dbconnect.Connect;
 
 public class Login {
@@ -83,7 +81,7 @@ public class Login {
 			        	ResultSet rs=psInst.executeQuery();
 			        	rs.next(); 
 			        	int TaId = rs.getInt("Student_id");
-			        	TA.showHomePage(ip);
+			        	TA.showHomePage(ip,TaId);
 			        	
 		        	}
 		        	else{
