@@ -81,7 +81,7 @@ public class Login {
 			        	ResultSet rs=psInst.executeQuery();
 			        	rs.next(); 
 			        	int TaId = rs.getInt("Student_id");
-			        	TA.showHomePage(ip);
+			        	TA.showHomePage(ip,TaId);
 			        	
 		        	}
 		        	else{
