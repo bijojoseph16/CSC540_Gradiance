@@ -96,5 +96,30 @@ public class Queries{
 	static final String getCourseByCourseID = "Select * from course where course_id = ?";
     static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
     static final String courseExists = "Select count(*) as \"course_exists\" from course where course_id = ?";
+    
+    //Query to add course
+    static final String addCourse = "Insert into course (course_id, course_name,course_level,max_students) values (?,?,?,?)";
+    //static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
+    //        + " values(?, to_date('?','YYYY-MM-DD HH24:MI:SS'),to_date('?','YYYY-MM-DD HH24:MI:SS')";
+    
+    
+    static final String durationExists = "Select count(*) as \"duration_exists\" from duration where start_date = ? and end_date = ?";
+    static final String addDuration = "Insert into duration(start_date, end_date)"
+            + " values(?,?)";
 
+    static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
+            + " values(?,?,?)";
+
+    //Trigger to autoincrement course count
+    //The trigger has to be created at the time of table creation, so that
+    //c_id_seq will have latest count
+    static final String trg_c_id = "create sequence c_id_seq;"
+            + "create trigger trg_c_id " + 
+            "     before insert on course " + 
+            "     for each row " + 
+            "   begin " + 
+            "    select c_id_seq.nextval " + 
+            "       into :new.c_id " + 
+            "       from dual; " + 
+            "   end; ";
 }

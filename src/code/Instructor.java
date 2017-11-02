@@ -2,6 +2,7 @@ package code;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.sql.*;
 
 import dbconnect.Connect;
@@ -17,11 +18,11 @@ public class Instructor {
          System.out.println("2. View Course/Add Course");
          //Doubtful, as students can only be added when we have
          //a course ID
-         System.out.println("4. Enroll a Student");
-         System.out.println("5. Drop a Student");
-         System.out.println("6. Search Question in Question Bank");
-         System.out.println("7. Add Question in Question Bank");
-         System.out.println("8. Logout");
+         System.out.println("3. Enroll a Student/Drop a Student");     
+         System.out.println("4. Search Question in Question Bank/Add Question in Question Bank");
+         System.out.println("5. Logout");
+         
+         //Only 1, 2 are valid inputs
          try {
              //Take User input
              System.out.print("Choice : ");
@@ -34,21 +35,12 @@ public class Instructor {
                  Instructor.viewOrAddCourse(ip, instructorID);
                  
              } else if(3 == choice) {
-                 Instructor.addCourse(ip, instructorID);
+                 Instructor.enrollOrDropStudent(ip, instructorID);
                  
              } else if(4 == choice) {
-                 Instructor.enrollStudent();
+                 Instructor.searchOrAddQuestionInQB(ip);
                  
-             } else if(5 == choice) {
-                 Instructor.dropStudent();
-                 
-             } else if(6 == choice) {
-                 Instructor.searchQuestionInQB();
-                 
-             } else if(7 == choice) {
-                 Instructor.addQuestionInQB();
-                 
-             } else if(8 == choice) {
+             }else if(5 == choice) {
                  Login.startPage(ip);
                  
              }
@@ -148,32 +140,25 @@ public class Instructor {
      }
      
      /*
-      * Add a student a student to Course
+      * Enroll or drop a student from course the instructor teaches
       */
-     public static void addStudent() {
-         
-     }
-     /*
-      * Drop a student from Course
-      */
-      public static void dropStudent() {
-      
-     }
-
-     /*
-      * Instructor can search a question 
-      */
-     public static void searchQuestionInQB() {
-         
-     }
-      
-     /*
-      * Instructor can add a question 
-      */
-     public static void addQuestionInQB() {
-         
+     public static void enrollOrDropStudent(Scanner ip, int instructorID) {
+         try {
+             System.out.println("1. Enroll a Student from course");
+             System.out.println("2. Drop a Student from course");
+             
+         } catch(NumberFormatException e) {
+             System.out.println("Enter valid input");
+             Instructor.enrollOrDropStudent(ip, instructorID);
+         }
+         catch (Exception e) {
+             e.printStackTrace();
+         }
      }
 
+     public static void searchOrAddQuestionInQB(Scanner ip) {
+         
+     }
      /************Functions called from viewOrAddCourse*******************/
      /*
       * Show the relevant details for course
@@ -260,13 +245,110 @@ public class Instructor {
      }
 
      /*
-      * Add a course
+      * Add a course accept courseID, courseName,
+      * the level of course, maxStudents,
+      * startDate and endDate
       */
      public static void addCourse(Scanner ip, int instructorID) {
-         System.out.println("Enter CourseID");
-         System.out.println("Course Name");
-         System.out.println("Enter Start Date");
-         System.out.println("Enter End Date");
+
+         PreparedStatement psAddCourse = null;
+         PreparedStatement psAddCourseDuration = null;
+         PreparedStatement psGetCourseByC_ID = null;
+         ResultSet rsGetCourseByC_ID = null;
+         PreparedStatement psAddDuration = null;
+         
+         ip.nextLine();
+         try {
+             
+           System.out.println("Enter CourseID:");
+           String courseID = ip.nextLine();
+
+           System.out.println("Course Name:");
+           String courseName = ip.nextLine();
+ 
+           System.out.println("Enter CourseLevel (Grad/Undergrad):");
+           String courseLevel = ip.nextLine();
+           
+           System.out.println("Enter maximum number of students:");
+           String maxStudents = ip.nextLine();
+           
+           psAddCourse = Connect.getConnection().prepareStatement(Queries.addCourse);
+           psAddCourse.setString(1, courseID);
+           psAddCourse.setString(2,courseName);
+           psAddCourse.setString(3, courseLevel);
+           psAddCourse.setInt(4, Integer.parseInt(maxStudents));
+           psAddCourse.executeQuery();
+                      
+           //Ask date to satisfy the default format requirement
+           //Default: YYYY-MM-DD 
+           System.out.println("Enter Course Start Date(yyyy-mm-dd):");
+           String startDate = ip.nextLine();         
+           System.out.println("Enter Course End Date(yyyy-mm-dd):");
+           String endDate = ip.nextLine();
+           
+           psAddDuration = Connect.getConnection().prepareStatement(Queries.addDuration);
+           psAddDuration.setDate(1, java.sql.Date.valueOf(startDate));
+           psAddDuration.setDate(2, java.sql.Date.valueOf(endDate));
+           psAddDuration.executeQuery();
+                  
+
+           //If the course exists procceed to add adding the
+           //course in course has duration.
+           //If course does not exist show error message 
+           //and ask for new courseID      
+           psGetCourseByC_ID = Connect.getConnection().prepareStatement(Queries.getCourseByCourseID);
+           psGetCourseByC_ID.setString(1, courseID);
+           rsGetCourseByC_ID = psGetCourseByC_ID.executeQuery();
+           rsGetCourseByC_ID.next();
+           
+           //After a course has been added to course table and duration added to duratio table
+           //Add c_id and duration to course has duration. If this is not followed 
+           //there will be integrity constraint violations.
+           int cID = rsGetCourseByC_ID.getInt("c_ID");
+           
+           
+           psAddCourseDuration = Connect.getConnection().prepareStatement(Queries.addCourseDuration);
+           psAddCourseDuration.setInt(1, cID);
+           psAddCourseDuration.setDate(2, java.sql.Date.valueOf(startDate));
+           psAddCourseDuration.setDate(3, java.sql.Date.valueOf(endDate));             
+           psAddCourseDuration.executeQuery();
+           
+           Connect.close(psAddCourse);
+           Connect.close(psAddDuration);
+           Connect.close(psAddCourseDuration);
+           Connect.close(psGetCourseByC_ID);
+           Connect.close(rsGetCourseByC_ID);
+           
+           System.out.println("Course has been successfully added");
+           int choice ;
+           
+           do {
+             System.out.println("Press 0 to Go back");
+             choice = Integer.parseInt(ip.nextLine());
+             if(choice == 0) {
+                 Instructor.viewOrAddCourse(ip, instructorID);
+             }
+           }while (choice != 0);
+           
+         } catch (SQLException e) {
+             e.printStackTrace();
+             System.out.println("Could not insert Course, Press Enter to try again");
+             Instructor.addCourse(ip, instructorID);
+             
+         } catch (Exception e) {
+             e.printStackTrace();
+         } finally {
+             /*
+             Connect.close(psAddCourse);
+             Connect.close(rsAddCourse);
+             Connect.close(psCourseExists);
+             Connect.close(rsCourseExists);
+             Connect.close(psAddCourseDuration);
+             Connect.close(rsAddCourseDuration);
+             Connect.close(psGetCourseByC_ID);
+             Connect.close(rsGetCourseByC_ID);
+             */
+         }
      }
 
      /**********Functions called from viewCourse*****************/
@@ -328,12 +410,36 @@ public class Instructor {
          
      }
 
+     /***********Function called from Enroll/Drop student or from ViewCourse******/
      /*
       * Enroll or drop a student from Course
       */
-     public static void enrollStudent() {
+     public static void enrollStudent(Scanner ip, int c_id) {
       
      }
      
+     /*
+      * Drop a student from Course
+      */
+      public static void dropStudent(Scanner ip, int c_id) {
+      
+     }
+     
+      /**************Functions called from SearchOrAddQuestionInDB******************/
+      /*
+       * Instructor can search a question 
+       */
+      public static void searchQuestionInQB(Scanner ip, int qID) {
+          
+      }
+       
+      /*
+       * Instructor can add a question 
+       */
+      public static void addQuestionInQB(Scanner ip) {
+          
+      }
 
+
+   
 }
