@@ -110,7 +110,6 @@ public class Queries{
     static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
     static final String courseExists = "Select count(*) as \"course_exists\" from course where course_id = ?";
     
-<<<<<<< HEAD
     //Query to add course
     static final String addCourse = "Insert into course (course_id, course_name,course_level,max_students) values (?,?,?,?)";
     //static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
@@ -120,7 +119,6 @@ public class Queries{
     static final String durationExists = "Select count(*) as \"duration_exists\" from duration where start_date = ? and end_date = ?";
     static final String addDuration = "Insert into duration(start_date, end_date)"
             + " values(?,?)";
-=======
 	/*Take care when adding a question to an exercise that the question picked to add actually belongs to one of the topics from that course
 	 * (select unique t.question_id from topic_has_question t, course_has_exercise c, course_has_topic ct 
    where c.course_id = ct.course_id and ct.topic_id = t.topic_id and c.exercise_id = EX_ID)*/
@@ -170,7 +168,6 @@ public class Queries{
 					showResultsSet(rs); 
 	 
 	 * */
->>>>>>> 581fe7bf7df43fcdb5eb253744ff6576100d46b2
 
     static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
             + " values(?,?,?)";
