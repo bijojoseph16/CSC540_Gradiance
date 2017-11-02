@@ -54,16 +54,16 @@ public class Queries{
 			"     WHERE ex_id = ee_id; " + 
 			"    select max(sse.points_earned) into max_score " + 
 			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
-			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id = sse.student_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
 			"    select sse.points_earned into last_score " + 
 			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
-			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id and " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id = sse.student_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id and " + 
 			"    sse.attempt_number = (select max(sse1.attempt_number) " + 
 			"    from student_submits_exercise sse1, course_has_exercise c1, enrollments p1 " + 
-			"    where sse1.ex_id = c1.exercise_id and c1.course_id = p1.course_id and p1.student_id=ss_id and p1.course_id=cc_id and sse1.ex_id = ee_id);     " +  
+			"    where sse1.ex_id = c1.exercise_id and c1.course_id = p1.course_id and p1.student_id = sse1.student_id and p1.student_id=ss_id and p1.course_id=cc_id and sse1.ex_id = ee_id);     " +  
 			"    select avg(sse.points_earned) into avg_score " + 
 			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
-			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id = sse.student_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
 			"   IF ss_policy = 'Latest_Attempt' THEN " + 
 			"      f_score := last_score; " + 
 			"   ELSIF ss_policy = 'Average_Attempt' THEN " + 
@@ -110,6 +110,15 @@ public class Queries{
     static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
     static final String courseExists = "Select count(*) as \"course_exists\" from course where course_id = ?";
     
+    //Query to add course
+    static final String addCourse = "Insert into course (course_id, course_name,course_level,max_students) values (?,?,?,?)";
+    //static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
+    //        + " values(?, to_date('?','YYYY-MM-DD HH24:MI:SS'),to_date('?','YYYY-MM-DD HH24:MI:SS')";
+    
+    
+    static final String durationExists = "Select count(*) as \"duration_exists\" from duration where start_date = ? and end_date = ?";
+    static final String addDuration = "Insert into duration(start_date, end_date)"
+            + " values(?,?)";
 	/*Take care when adding a question to an exercise that the question picked to add actually belongs to one of the topics from that course
 	 * (select unique t.question_id from topic_has_question t, course_has_exercise c, course_has_topic ct 
    where c.course_id = ct.course_id and ct.topic_id = t.topic_id and c.exercise_id = EX_ID)*/
@@ -160,4 +169,19 @@ public class Queries{
 	 
 	 * */
 
+    static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
+            + " values(?,?,?)";
+
+    //Trigger to autoincrement course count
+    //The trigger has to be created at the time of table creation, so that
+    //c_id_seq will have latest count
+    static final String trg_c_id = "create sequence c_id_seq;"
+            + "create trigger trg_c_id " + 
+            "     before insert on course " + 
+            "     for each row " + 
+            "   begin " + 
+            "    select c_id_seq.nextval " + 
+            "       into :new.c_id " + 
+            "       from dual; " + 
+            "   end; ";
 }
