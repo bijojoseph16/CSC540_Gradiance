@@ -54,16 +54,16 @@ public class Queries{
 			"     WHERE ex_id = ee_id; " + 
 			"    select max(sse.points_earned) into max_score " + 
 			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
-			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id = sse.student_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
 			"    select sse.points_earned into last_score " + 
 			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
-			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id and " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id = sse.student_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id and " + 
 			"    sse.attempt_number = (select max(sse1.attempt_number) " + 
 			"    from student_submits_exercise sse1, course_has_exercise c1, enrollments p1 " + 
-			"    where sse1.ex_id = c1.exercise_id and c1.course_id = p1.course_id and p1.student_id=ss_id and p1.course_id=cc_id and sse1.ex_id = ee_id);     " +  
+			"    where sse1.ex_id = c1.exercise_id and c1.course_id = p1.course_id and p1.student_id = sse1.student_id and p1.student_id=ss_id and p1.course_id=cc_id and sse1.ex_id = ee_id);     " +  
 			"    select avg(sse.points_earned) into avg_score " + 
 			"    from student_submits_exercise sse, course_has_exercise c, enrollments p " + 
-			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
+			"    where sse.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id = sse.student_id and p.student_id=ss_id and p.course_id=cc_id and sse.ex_id = ee_id; " + 
 			"   IF ss_policy = 'Latest_Attempt' THEN " + 
 			"      f_score := last_score; " + 
 			"   ELSIF ss_policy = 'Average_Attempt' THEN " + 
