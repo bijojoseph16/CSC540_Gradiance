@@ -21,7 +21,7 @@ public class TA{
 		
 		 case 2: TA.showCourse(ip,studentid);
 			 
-		 case 3: TA.logout(studentid);	 
+		 case 3: TA.logout(studentid,ip);	 
 		 
 		 }
 	}
@@ -37,11 +37,11 @@ public class TA{
 	          
 	          while(rs.next()) {
 	        	  System.out.println("1. First Name :");
-	          	System.out.print(rs.getString("firstname"));
+	          	System.out.println(rs.getString("firstname"));
 	          	System.out.println("2. Last Name :");
-	          	System.out.print(rs.getString("lastname"));
+	          	System.out.println(rs.getString("lastname"));
 	          	System.out.println("3. Userid :");
-	          	System.out.print(rs.getString("userId"));
+	          	System.out.println(rs.getString("userId"));
 	          	//Connect.close(pstmt);
 	          	
 	          }
@@ -80,13 +80,13 @@ public class TA{
 	          ResultSet rs2=pstmt2.executeQuery();
 	         while(rs.next()) {
 	        	 System.out.println("1.Course Name: ");
-	        	 System.out.print(rs.getString("course_name"));
+	        	 System.out.println(rs.getString("course_name"));
 	         }
 	         while(rs2.next()) {
 		System.out.println("2.Start Date: ");
-		System.out.print(rs2.getString("start_date"));
+		System.out.println(rs2.getString("start_date"));
 		System.out.println("3. End Date: ");
-		System.out.print(rs2.getString("end_date"));
+		System.out.println(rs2.getString("end_date"));
 		
 		 }
 		 }
@@ -101,14 +101,14 @@ public class TA{
 		switch(option) {
 		case 0: TA.showHomePage(ip,studentid);
 		case 4: TA.viewExercise(ip,studentid,courseinput);
-		//case 5: 
+		case 5: TA.enrollDropStudent(ip,courseinput,studentid); 
 		case 6: TA.viewReport(ip,courseinput,studentid);
 		}
 		
 	}
 
-	public static void logout(int studentid) {
-	
+	public static void logout(int studentid,Scanner ip) {
+		Login.startPage(ip);
 	
 	}
 	
@@ -157,11 +157,100 @@ public class TA{
 			}
 	    }
 
-	public static void enrollDropStudent() {
+	public static void enrollDropStudent(Scanner ip,int course,int studentid) {
+	System.out.println("1. Enroll student");
+	System.out.println("2. Drop Student");
+	System.out.println("0. Go Back");
 	
+	int x=ip.nextInt();
+	switch(x) {
+	case 1: TA.enrollStudent(ip,course, studentid);
+	case 2: TA.dropStudent(ip,course, studentid);
+	case 0: TA.showCourse(ip,studentid);
 	
 	}
+	
+	}
+	
+	public static void enrollStudent(Scanner ip,int course, int studentid) {
+		System.out.println("1. Enter Student Id for enrollment");
+		int id=ip.nextInt();
+		 String checkIfUgStudent = " select count(*) as ug_student from ug where student_id="+id;
+		 String addUgStudent="Insert into ug_enrolled (student_id,course_id) values ("+id+","+course+")";
+		 String checkIfPgStudent = " select count(*) as pg_student from pg where student_id="+id;
+		 String addPgStudent="Insert into pg_enrolled (student_id,course_id) values ("+id+","+course+")";
+		 try {
+	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(checkIfUgStudent);
+	          ResultSet rs=pstmt.executeQuery();
+	         while(rs.next()) {
+	          if(rs.getString("ug_student").equals("1")) {
+	        	  PreparedStatement pstmt2=Connect.getConnection().prepareStatement(addUgStudent);
+		          ResultSet rs2=pstmt2.executeQuery();
+		          System.out.println("Undergrad Student enrolled");
+	 		 }
+	          else {
+	        	  PreparedStatement pstmt3=Connect.getConnection().prepareStatement(checkIfPgStudent);
+		          ResultSet rs3=pstmt3.executeQuery();
+		          while(rs3.next()) {
+		        	  PreparedStatement pstmt4=Connect.getConnection().prepareStatement(addPgStudent);
+			          ResultSet rs4=pstmt4.executeQuery();
+		          System.out.println("Postgrad Student enrolled");
+		          }
+	          }
+	          
+		 }
+		 }
+		 catch(SQLException e) {
+	          	e.printStackTrace();
+	          }
+		 System.out.println("Press 0 to go back");
+		 int x=ip.nextInt();
+		 if(x==0) {
+			 TA.showHomePage(ip, studentid);
+		 }
+		
+	}
+	
+	
+	public static void dropStudent(Scanner ip,int course, int studentid) {
+		System.out.println("1. Enter Student Id for student to be dropped");
+		int id=ip.nextInt();
+		 String checkIfUgStudent = " select count(*) as ug_student from ug where student_id="+id;
+		 String deleteUgStudent="Delete from ug_enrolled where student_id="+ id+" and course_id="+course;
+		 String checkIfPgStudent = " select count(*) as pg_student from pg where student_id="+id;
+		 String deletePgStudent="Delete from pg_enrolled where student_id="+id+" and course_id="+course;
+		 try {
+	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(checkIfUgStudent);
+	          ResultSet rs=pstmt.executeQuery();
+	         while(rs.next()) {
+	          if(rs.getString("ug_student").equals("1")) {
+	        	  PreparedStatement pstmt2=Connect.getConnection().prepareStatement(deleteUgStudent);
+		          ResultSet rs2=pstmt2.executeQuery();
+		          System.out.println("Undergrad Student deleted");
+	 		 }
+	          else {
+	        	  PreparedStatement pstmt3=Connect.getConnection().prepareStatement(checkIfPgStudent);
+		          ResultSet rs3=pstmt3.executeQuery();
+		          while(rs3.next()) {
+		        	  PreparedStatement pstmt4=Connect.getConnection().prepareStatement(deletePgStudent);
+			          ResultSet rs4=pstmt4.executeQuery();
+		          System.out.println("Postgrad Student deleted");
+		          }
+	          }
+	          
+		 }
+		 }
+		 catch(SQLException e) {
+	          	e.printStackTrace();
+	          }
+		 System.out.println("Press 0 to go back");
+		 int x=ip.nextInt();
+		 if(x==0) {
+			 TA.showHomePage(ip, studentid);
+		 }
 
+	}
+	
 	public static void viewReport(Scanner ip,int course_id,int studentid) {
 		
 	String getReport="Select * from student_submits_exercise s, course_has_exercise c where c.course_id= "+course_id+"and s.ex_id=c.exercise_id";
