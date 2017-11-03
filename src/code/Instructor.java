@@ -16,18 +16,18 @@ public class Instructor {
      *[] View Course
        -[Done] View Course Name
        -[Done] View Course Start Date
-       -[] View Exercise
-       -[] Add Exercise
-       -[] View TA
-       -[] Add TA
-       -[] Enroll Student
-       -[] Drop Student
+       -[Pending] View Exercise
+       -[Pending] Add Exercise
+       -[Pending] View TA
+       -[Pending] Add TA
+       -[Rending] Enroll Student
+       -[Pending] Drop Student
        -[Done] Go Back
      *[Done] Add Course
-     *[]Enroll Student
-     *[]Drop Student
-     *[]Search Qusetion in QB
-     *[]Add Question in QB
+     *[Done/Testing now]Enroll Student
+     *[Pending]Drop Student
+     *[Pending]Search Qusetion in QB
+     *[Pending]Add Question in QB
     
      */
     
