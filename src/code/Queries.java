@@ -171,6 +171,37 @@ public class Queries{
 
     static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
             + " values(?,?,?)";
+    
+    //Query to enroll a UG Student
+    static final String enrollUGStudent = "Insert into ug_enrolled(student_id, course_id) values(?,?)";
+    
+    //Query to enroll a PG Student if student is TA in a course
+    //then he will not be enrolled.This only work if a student
+    //is TA dor only one course
+    static final String enrollPGStudent = "declare" + 
+                                            " isTA int; "+
+                                            " sid int; "+
+                                            " cid int; " +
+                                            " ta_ex exception; "+ 
+                                            " begin " +
+                                              " sid := ?;" +
+                                              " cid := ?;"+ 
+                                              " select count(*) into isTA " + 
+                                              " from PG " + 
+                                              " where student_id = sid and ta_course = cid; " + 
+                                              " if isTA > 0 then " + 
+                                                " raise ta_ex; " +
+                                              " else " +
+                                                " Insert into pg_enrolled(student_id, course_id) " +
+                                                " values (sid, cid); " + 
+                                              " end if; "+
+                                              "end;";
+                                              
+                                              //" exception " +
+                                                //" when ta_ex then " +
+                                                //" dbms_output.put_line('Student is TA for course'); " + 
+                                            //" end; "; 
+                                            
 
     //Trigger to autoincrement course count
     //The trigger has to be created at the time of table creation, so that
