@@ -47,7 +47,7 @@ public class Login {
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getInstructorByUIdPass);
 		        		psInst.setString(1,username);
 			        	psInst.setString(2,password);
-			            showResultsSet(psInst.executeQuery());
+			        //showResultsSet(psInst.executeQuery()); //Not required to show the instructor's details here
 			        	ResultSet rs=psInst.executeQuery();
 			        rs.next();
 			        	int instructorId = rs.getInt("professor_id");
@@ -77,7 +77,7 @@ public class Login {
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getTAByUIdPass);
 		        		psInst.setString(1,username);
 			        	psInst.setString(2,password);
-			        showResultsSet(psInst.executeQuery());
+			        //showResultsSet(psInst.executeQuery()); //Not required to show the TA details here
 			        	ResultSet rs=psInst.executeQuery();
 			        	rs.next(); 
 			        	int TaId = rs.getInt("Student_id");
@@ -109,7 +109,7 @@ public class Login {
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getStudentByUIdPass);
 		        		psInst.setString(1,username);
 			        	psInst.setString(2,password);
-			        	showResultsSet(psInst.executeQuery());
+			        	//showResultsSet(psInst.executeQuery()); //Not needed to show the student details here
 			        	ResultSet rs=psInst.executeQuery();
 			        	rs.next();
 			        	int StudentId = rs.getInt("Student_id");
