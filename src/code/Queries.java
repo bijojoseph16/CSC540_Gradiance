@@ -99,7 +99,7 @@ public class Queries{
 			"  ?," + 
 			"  ?," + 
 			"  ?," + 
-			"  to_timestamp(sysdate)" + 
+			"  (SELECT SYSTIMESTAMP FROM DUAL) " + 
 			")";
 	
 	static final String checkTA = "Select count(*) as \"ta_exists\" from student s, pg p where userid=? and password=? and s.student_id = p.student_id and p.ta_course <> 0";
