@@ -20,12 +20,12 @@ public class Instructor {
        -[Pending] Add Exercise
        -[Pending] View TA
        -[Pending] Add TA
-       -[Rending] Enroll Student
+       -[Pending] Enroll Student
        -[Pending] Drop Student
        -[Done] Go Back
      *[Done] Add Course
-     *[Done/Testing now]Enroll Student
-     *[Pending]Drop Student
+     *[Done]Enroll Student
+     *[Done]Drop Student
      *[Pending]Search Qusetion in QB
      *[Pending]Add Question in QB
     
@@ -138,27 +138,31 @@ public class Instructor {
          
            if(1 == choice) {
              Instructor.viewCourse(ip, instructorID);
+             return;
            }
            else if(2 == choice) {
              Instructor.addCourse(ip, instructorID);
+             return;
            }
            else if(0 == choice) {
-             Instructor.showHomePage(ip, instructorID);    
+             Instructor.showHomePage(ip, instructorID);
+             return;
            }
            else {
              System.out.println("Please enter valid input");
-             Instructor.viewOrAddCourse(ip, instructorID);
            }
            
          }catch(NumberFormatException e) {
              //Invalid user inputs are handled
              System.out.println("Please enter valid input");
-             Instructor.viewOrAddCourse(ip, instructorID);
+             //Instructor.viewOrAddCourse(ip, instructorID);
              
          }catch(Exception e) {
              e.printStackTrace();
          }
          
+         Instructor.viewOrAddCourse(ip, instructorID);
+         return;         
      }
      
      /*
@@ -186,18 +190,19 @@ public class Instructor {
              
              if(1 == choice) {
                  Instructor.enrollStudent(ip, cID, instructorID, callerFlag);
+                 return;
              }
              else if(2 == choice) {
                  Instructor.dropStudent(ip, cID, instructorID, callerFlag);
+                 return;
              }
              else {
-                 System.out.println("Invalid input");
-                 Instructor.showHomePage(ip, instructorID);
+                 System.out.println("Invalid input");     
              }
                    
          } catch(NumberFormatException e) {
              System.out.println("Enter valid input");
-             Instructor.showHomePage(ip, instructorID);
+             //Instructor.showHomePage(ip, instructorID);
          }
          catch (Exception e) {
              e.printStackTrace();
@@ -205,6 +210,9 @@ public class Instructor {
              Connect.close(ps);
              Connect.close(rs);
          }
+         
+         Instructor.showHomePage(ip, instructorID);
+         return;
      }
 
      public static void searchOrAddQuestionInQB(Scanner ip) {
@@ -218,7 +226,9 @@ public class Instructor {
      public static void viewCourse(Scanner ip, int instructorID) {
          //Ask course ID
          int cID;
+     
          try {
+           System.out.println("*****View Course*****");
            System.out.println("Enter Course ID:");
            // if valid show course details
            //Show Course details
@@ -246,7 +256,7 @@ public class Instructor {
              
              System.out.println("Course Name: " + results.getString("Course_name"));
              cID = results.getInt("c_ID");
-             System.out.println("Course unique idenrifier " + cID);
+             //System.out.println("Course unique idenrifier " + cID);
              PreparedStatement psCourseDuration = Connect.getConnection().prepareStatement(Queries.getCourseDuration);
              psCourseDuration.setInt(1, cID);
              ResultSet resultsCourseDuration = psCourseDuration.executeQuery();
@@ -277,24 +287,31 @@ public class Instructor {
          
              if(0 == choice) {
                Instructor.viewOrAddCourse(ip, instructorID);
+               return;
+               
+             } else if (3 == choice) {
+                 Instructor.enrollOrDropStudentFromViewCourse(ip, cID, instructorID);
+                 return;
+                 
              } else {
-                 System.out.println("Invalid input.");
-                 Instructor.viewCourse(ip, instructorID);
+                 System.out.println("Invalid input.");               
              }
            }
            else {
                System.out.println("Course does not exist.");
                Connect.close(psCourseExists);
                Connect.close(rsCourseExists);
-               Instructor.viewCourse(ip, instructorID);
+               //Instructor.viewCourse(ip, instructorID);
            }
            
          } catch (NumberFormatException e) {
              System.out.println("Please enter valid input");
-             Instructor.viewCourse(ip, instructorID);
+             //Instructor.viewCourse(ip, instructorID);
          } catch (Exception e) {
              e.printStackTrace();
          }
+         Instructor.viewCourse(ip, instructorID);
+         return;
        
      }
 
@@ -685,8 +702,46 @@ public class Instructor {
           
       }
       
-      public static void enrollOrDropStudent(Scanner ip, int c_id) {
-          
+      public static void enrollOrDropStudentFromViewCourse(Scanner ip, int c_id, int instructorID) {
+          PreparedStatement ps = null;
+          ResultSet rs = null;
+          try {
+              //As we call this method from viewCourse, we already have
+              //the courses unique identifier
+              int cID = c_id;
+              int callerFlag = 2;
+              System.out.println("1. Enroll a Student in course");
+              System.out.println("2. Drop a Student from course");
+              System.out.print("Choice:");
+              
+              int choice = Integer.parseInt(ip.next());
+              
+              if(1 == choice) {
+                  Instructor.enrollStudent(ip, cID, instructorID, callerFlag);
+                  return;
+              }
+              else if(2 == choice) {
+                  Instructor.dropStudent(ip, cID, instructorID, callerFlag);
+                  return;
+              }
+              else {
+                  System.out.println("Invalid input");
+              }
+                    
+          } catch(NumberFormatException e) {
+              System.out.println("Enter valid input");
+              //Instructor.showHomePage(ip, instructorID);
+          }
+          catch (Exception e) {
+              e.printStackTrace();
+          } finally {
+              Connect.close(ps);
+              Connect.close(rs);
+              
+          }
+          //Go back to view Course page on succes/failure
+          Instructor.viewCourse(ip, instructorID);
+          return;
       }
 
       /******************Functions called from viewOrAddExercise**************************/
