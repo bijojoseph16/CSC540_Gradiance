@@ -202,7 +202,47 @@ public class Queries{
                                                 //" dbms_output.put_line('Student is TA for course'); " + 
                                             //" end; "; 
                                             
+    //Query to drop a UG Student if student is enrolled in a course
+    //This only works if a UG student is enrolled in course
+    //the instructor wants to remove him from.
+    static final String dropUGStudent = "declare" + 
+                                            " isUGStudent int; "+
+                                            " sid int; "+
+                                            " cid int; " +
+                                            " notEnrolled_ex exception; "+ 
+                                            " begin " +
+                                              " sid := ?;" +
+                                              " cid := ?;"+ 
+                                              " select count(*) into isUGStudent " + 
+                                              " from UG_ENROLLED " + 
+                                              " where student_id = sid and course_id = cid; " + 
+                                              " if isUGStudent = 0 then " + 
+                                                " raise notEnrolled_ex; " +
+                                              " else " +
+                                                " Delete from UG_ENROLLED where student_id = sid and course_id = cid; " + 
+                                              " end if; "+
+                                              "end;";
 
+    //Query to drop a PG Student if student is enrolled in a course
+    //This only works if a UG student is enrolled in course
+    //the instructor wants to remove him from.
+    static final String dropPGStudent = "declare" + 
+                                            " isPGStudent int; "+
+                                            " sid int; "+
+                                            " cid int; " +
+                                            " notEnrolled_ex exception; "+ 
+                                            " begin " +
+                                              " sid := ?;" +
+                                              " cid := ?;"+ 
+                                              " select count(*) into isPGStudent " + 
+                                              " from PG_ENROLLED " + 
+                                              " where student_id = sid and course_id = cid; " + 
+                                              " if isPGStudent = 0 then " + 
+                                                " raise notEnrolled_ex; " +
+                                              " else " +
+                                                " Delete from PG_ENROLLED where student_id = sid and course_id = cid; " + 
+                                              " end if; "+
+                                              "end;";
     //Trigger to autoincrement course count
     //The trigger has to be created at the time of table creation, so that
     //c_id_seq will have latest count

@@ -458,12 +458,19 @@ public class Instructor {
                  psEnrollUGStudent.setInt(2, cID);
                  psEnrollUGStudent.executeQuery();
                  System.out.println("UG Student enrolled successfully\n");
-                 Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                 //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
                  
+               } catch (SQLException e) {
+                   if(e.getSQLState().startsWith("23")) {
+                       System.out.println("Could not enroll UG Student, he is currently enrolled in the course\n");
+                       
+                   }
+                   
                } catch (Exception e) {
                    System.out.println("Could not enroll UG Student\n");
                    //Instructor.enrollOrDropStudent(ip);
                    e.printStackTrace();
+                   
                } finally {
                    Connect.close(psUGStudent);
                    Connect.close(rsUGStudent);
@@ -478,14 +485,24 @@ public class Instructor {
                  psEnrollPGStudent.setInt(2, cID);
                  psEnrollPGStudent.executeQuery();
                  System.out.println("PG Successfully enrolled Student");
-                 Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                 //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
                  
                } catch (SQLException e) {
-                   System.out.println("Could not enroll PG Student as he is TA");
-                   //Instructor.enrollOrDropStudent(ip);
-                   //e.printStackTrace();
+                   if(e.getSQLState().startsWith("23")) {
+                       System.out.println("Could not enroll PG Student, he is currently enrolled in the course\n");
+                   }
                    
-               } catch(Exception e){}
+                   //Need to catch this PL-SQL exception
+                   else {
+                     System.out.println("Could not enroll PG Student as he is TA");
+                     //Instructor.enrollOrDropStudent(ip);
+                     //e.printStackTrace();
+                   }
+                   
+               } catch(Exception e){
+                   System.out.println("Could not enroll PG Student");
+                   e.printStackTrace();
+               }
                  
                  finally {
                    Connect.close(psPGStudent);
@@ -496,7 +513,7 @@ public class Instructor {
            }
            else {
                System.out.println("Could not execute query as student does not exist");
-               Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+               //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
            }
            Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
           /*
@@ -543,11 +560,92 @@ public class Instructor {
      /*
       * Drop a student from Course
       */
-      public static void dropStudent(Scanner ip, int c_id, int instructorID, int callerFlag) {
+      public static void dropStudent(Scanner ip, int cID, int instructorID, int callerFlag) {
 
           //On Success return to the caller method
-          Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+          PreparedStatement psUGStudent = null;
+          ResultSet rsUGStudent = null;
+          PreparedStatement psPGStudent = null;
+          ResultSet rsPGStudent = null;
+          PreparedStatement psDropUGStudent = null;
+          PreparedStatement psDropPGStudent = null;
+          
+          try {
+            System.out.print("Enter Student ID:");
+            int studentID = Integer.parseInt(ip.next());
+            System.out.print("Enter Student's first name:");
+            String studentFirstName = ip.next();
+            System.out.print("Enter Student's last name:");
+            String studentLastName = ip.next();
+            
+            psUGStudent = Connect.getConnection().prepareStatement(Queries.checkIfUgStudent);
+            psUGStudent.setInt(1, studentID);
+            rsUGStudent = psUGStudent.executeQuery();
+            rsUGStudent.next();
+            
+            psPGStudent = Connect.getConnection().prepareStatement(Queries.checkIfPgStudent);
+            psPGStudent.setInt(1, studentID);
+            rsPGStudent = psPGStudent.executeQuery();
+            rsPGStudent.next();
 
+            if(1 == rsUGStudent.getInt("ug_student")) {
+                try {
+                  psDropUGStudent = Connect.getConnection().prepareStatement(Queries.dropUGStudent);
+                  psDropUGStudent.setInt(1, studentID);
+                  psDropUGStudent.setInt(2, cID);
+                  psDropUGStudent.executeQuery();
+                  System.out.println("UG Student dropped successfully\n");
+                  //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                  
+                } catch (SQLException e) {
+                    System.out.println("Could not drop UG Student as he is not enrolled in course\n");
+                    e.printStackTrace();
+                    
+                } catch (Exception e) {
+                    System.out.println("Could not drop UG Student\n");
+                    e.printStackTrace();
+                    
+                } finally {
+                    Connect.close(psUGStudent);
+                    Connect.close(rsUGStudent);
+                    Connect.close(psDropUGStudent);
+                    
+                }
+            }
+            else if(1 == rsPGStudent.getInt("pg_student")) {
+                try {
+                  psDropPGStudent = Connect.getConnection().prepareStatement(Queries.dropPGStudent);
+                  psDropPGStudent.setInt(1, studentID);
+                  psDropPGStudent.setInt(2, cID);
+                  psDropPGStudent.executeQuery();
+                  System.out.println("PG Successfully dropped Student");
+                  //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                  
+                } catch (SQLException e) {
+                    System.out.println("Could not enroll PG Student as he is not enrolled in the course");
+                    e.printStackTrace();
+                    
+                } catch(Exception e){
+                    System.out.println("Could not enroll PG Student");
+                    e.printStackTrace();
+                    
+                } finally {
+                    Connect.close(psPGStudent);
+                    Connect.close(rsPGStudent);
+                    Connect.close(psDropPGStudent);
+                    
+                }
+            }
+            else {
+                System.out.println("Could not execute query as student does not exist");
+                //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+            }
+            
+            Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+            
+          } catch (Exception e) {
+              e.printStackTrace();
+          } 
      }
       /*
        * Helper method to go back to appropriate screen after succes/failure in
