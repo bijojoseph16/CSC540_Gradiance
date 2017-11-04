@@ -857,7 +857,65 @@ public class Instructor {
       //Check should be put on PG_ENROLLED table so that a student 
       //cannot ne both TA and enrolled for the course
       public static void addTA(Scanner ip, int c_id) {
-          
+          PreparedStatement psIsPG = null;
+          PreparedStatement psAddTA = null;
+          ResultSet rsIsPG = null;
+          try {
+            System.out.print("Enter Student ID:");
+            int studentID = Integer.parseInt(ip.next());
+            System.out.print("Enter Student's first name:");
+            String studentFirstName = ip.next();
+            System.out.print("Enter Student's last name:");
+            String studentLastName = ip.next();
+            
+            psIsPG = Connect.getConnection().prepareStatement(Queries.checkIfPgStudent);
+            psIsPG.setInt(1, studentID);
+            
+            rsIsPG = psIsPG.executeQuery();
+            rsIsPG.next();
+
+            if(1 == rsIsPG.getInt("pg_student")) {
+                try {
+                  psAddTA = Connect.getConnection().prepareStatement(Queries.addTA);
+                  psAddTA.setInt(1, studentID);
+                  psAddTA.setInt(2, c_id);
+                  psAddTA.executeQuery();
+                  System.out.println("Successfully Added TA");
+                  //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                  
+                } catch (SQLException e) {
+                    if(e.getSQLState().startsWith("23")) {
+                        System.out.println("Could not enroll PG Student, he is currently enrolled in the course\n");
+                    }
+                    
+                    //Need to catch this PL-SQL exception
+                    else {
+                      System.out.println("Could not add TA as he is a student");
+                      //Instructor.enrollOrDropStudent(ip);
+                      //e.printStackTrace();
+                    }
+                    
+                } catch(Exception e){
+                    System.out.println("Could not enroll PG Student");
+                    e.printStackTrace();
+                }
+                  
+                  finally {
+                    Connect.close(psIsPG);
+                    Connect.close(rsIsPG);
+                    Connect.close(psAddTA);
+                    
+                }
+            }
+            else {
+                System.out.println("Could not execute query as student does not exist");
+                //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+            }
+            Instructor.viewOrAddTA(ip, c_id);
+            
+          } catch (Exception e) {
+              e.printStackTrace();
+          }          
       }
       
       

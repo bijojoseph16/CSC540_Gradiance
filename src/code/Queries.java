@@ -176,8 +176,7 @@ public class Queries{
     static final String enrollUGStudent = "Insert into ug_enrolled(student_id, course_id) values(?,?)";
     
     //Query to enroll a PG Student if student is TA in a course
-    //then he will not be enrolled.This only work if a student
-    //is TA dor only one course
+    //then he will not be enrolled.
     static final String enrollPGStudent = "declare" + 
                                             " isTA int; "+
                                             " sid int; "+
@@ -197,10 +196,6 @@ public class Queries{
                                               " end if; "+
                                               "end;";
                                               
-                                              //" exception " +
-                                                //" when ta_ex then " +
-                                                //" dbms_output.put_line('Student is TA for course'); " + 
-                                            //" end; "; 
                                             
     //Query to drop a UG Student if student is enrolled in a course
     //This only works if a UG student is enrolled in course
@@ -248,7 +243,25 @@ public class Queries{
     static final String getTAOfCourse = 
                 "Select S.student_id , S.firstname , S.lastname from Student S where S.student_id in (Select P.student_id from pg P where P.ta_course = ?)";  
              
-    
+    //Query to add a TA to course
+    static final String addTA = "declare" + 
+            " isStudent int; "+
+            " sid int; "+
+            " cid int; " +
+            " student_ex exception; "+ 
+            " begin " +
+              " sid := ?;" +
+              " cid := ?;"+ 
+              " select count(*) into isStudent " + 
+              " from PG_ENROLLED " + 
+              " where student_id = sid and ta_course = cid; " + 
+              " if isStudent > 0 then " + 
+                " raise student_ex; " +
+              " else " +
+                " Insert into pg_enrolled(student_id, course_id) " +
+                " values (sid, cid); " + 
+              " end if; "+
+              "end;";
     
     //Trigger to autoincrement course count
     //The trigger has to be created at the time of table creation, so that
