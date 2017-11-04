@@ -169,7 +169,7 @@ public class Student {
 				
 				//Take Use input
 				System.out.println("0. Go Back");
-				System.out.println("Or Select a course Id to view details");
+				System.out.println("Or Select a c_id to view details");
 				System.out.print("Choice: ");
 				
 				
@@ -296,7 +296,7 @@ public class Student {
 				Student.showCourseHW(ip, studentId, courseId);
 			}else if(hwMap.containsKey(choice) && hwMap.get(choice) > 0) {
 					
-					System.out.println("Opening HW " + choice + " for Attempt # " + exRets.get(choice));
+					System.out.println("Opening HW " + choice + " for Attempt # " + Integer.toString(exRets.get(choice) - hwMap.get(choice) + 1));
 					Student.attemptHW(ip, studentId, courseId, choice, exRets.get(choice) - hwMap.get(choice) + 1);
 			}else {
 				System.out.println("Invalid Input. Enter your choice again");
