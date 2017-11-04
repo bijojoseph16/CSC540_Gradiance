@@ -18,10 +18,10 @@ public class Instructor {
        -[Done] View Course Start Date
        -[Pending] View Exercise
        -[Pending] Add Exercise
-       -[Pending] View TA
+       -[Done] View TA
        -[Pending] Add TA
-       -[Pending] Enroll Student
-       -[Pending] Drop Student
+       -[Done] Enroll Student
+       -[Done] Drop Student
        -[Done] Go Back
      *[Done] Add Course
      *[Done]Enroll Student
@@ -289,6 +289,9 @@ public class Instructor {
                Instructor.viewOrAddCourse(ip, instructorID);
                return;
                
+             } else if(2 == choice) {
+                 Instructor.viewOrAddTA(ip, cID);
+                 
              } else if (3 == choice) {
                  Instructor.enrollOrDropStudentFromViewCourse(ip, cID, instructorID);
                  return;
@@ -677,6 +680,8 @@ public class Instructor {
             Instructor.viewCourse(ip, instructorID);
           }          
       }
+      
+     
       /**************Functions called from SearchOrAddQuestionInDB******************/
       /*
        * Instructor can search a question 
@@ -698,7 +703,38 @@ public class Instructor {
           
       }
       
+      /*
+       * @param ip - Scanner to take user input
+       * @param c_id - Unique course Identifer
+       * 
+       */
       public static void viewOrAddTA(Scanner ip, int c_id) {
+          try {
+            System.out.println("0:Go Back");
+            System.out.println("1.View TA");
+            System.out.println("2.Add TA");
+            System.out.print("Choice:");
+            
+            int choice = Integer.parseInt(ip.next());
+            System.out.println();
+            if(1 == choice) {
+              Instructor.viewTA(ip, c_id); 
+              return;
+            }
+            else if (2 == choice) {
+              Instructor.addTA(ip, c_id);
+              return;
+            }
+            
+          } catch (NumberFormatException e) {
+              System.out.println("Enter valid Input:");
+              Instructor.viewOrAddTA(ip, c_id);
+              return;
+              
+          } catch (Exception e) {
+              e.printStackTrace();
+              
+          }
           
       }
       
@@ -779,8 +815,43 @@ public class Instructor {
       }     
       
       /***********Functions called from viewOrAddTA******************************************/
+      
+      /*
+       * Display the name 
+       */
       public static void viewTA(Scanner ip, int c_id) {
-          
+          PreparedStatement psTA = null;
+          ResultSet rsTA = null;
+          try {
+              psTA = Connect.getConnection().prepareStatement(Queries.getTAOfCourse);
+              psTA.setInt(1, c_id);
+              rsTA = psTA.executeQuery();
+              
+              //What if there are two TA's for course
+              while(rsTA.next()) {
+                int studentID = rsTA.getInt(1);
+                String studentFirstName = rsTA.getString(2);
+                String studentLastName = rsTA.getString(3);
+                
+                System.out.println("Student ID:"+studentID);
+                System.out.println("First Name:"+studentFirstName);
+                System.out.println("Last Name:"+studentLastName);
+                System.out.println();
+              }
+              
+          } catch(SQLException e) {
+              System.out.println("There is no TA for this course");
+              e.printStackTrace();
+          } catch (NumberFormatException e) {
+              System.out.println("Invalid Input");
+          } catch (Exception e) {
+              e.printStackTrace();
+          } finally {
+              Connect.close(psTA);
+              Connect.close(rsTA);
+          }
+          Instructor.viewOrAddTA(ip, c_id);  
+          return;
       }
       
       //Check should be put on PG_ENROLLED table so that a student 

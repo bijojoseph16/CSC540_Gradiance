@@ -243,6 +243,13 @@ public class Queries{
                                                 " Delete from PG_ENROLLED where student_id = sid and course_id = cid; " + 
                                               " end if; "+
                                               "end;";
+    
+    //Query to view TA of a course
+    static final String getTAOfCourse = 
+                "Select S.student_id , S.firstname , S.lastname from Student S where S.student_id in (Select P.student_id from pg P where P.ta_course = ?)";  
+             
+    
+    
     //Trigger to autoincrement course count
     //The trigger has to be created at the time of table creation, so that
     //c_id_seq will have latest count
