@@ -1076,17 +1076,6 @@ public class Instructor {
       
       public static void addQuestionToExercise(Scanner ip,int exID, int c_id, int instructor_id) {
     	  
-    	  		//add questions to the exercise if it is a standard exercise
-			/*
-			if(mode.equals("S")) {
-				System.out.println("You have created a Standard exercise. Please Add Questions to the exerice");
-				System.out.println("Fetching all questions from the course form this course topics");
-				
-			}else {
-				
-			}
-			*/
-			
     	  		PreparedStatement ps = null; PreparedStatement ps1 = null;PreparedStatement ps2 = null; PreparedStatement ps3 = null;
     	  		PreparedStatement ps4 = null; PreparedStatement ps5 = null;PreparedStatement ps6 = null; PreparedStatement ps7 = null;
     	  		ResultSet rs = null;	 ResultSet rs1 = null; ResultSet rs2 = null;	 ResultSet rs3 = null;
@@ -1115,11 +1104,11 @@ public class Instructor {
     	  					  System.out.println("The selected exercise is a standard exercise");
     	  					  System.out.println("Maximum Allowed Question in this exercise are " + rs1.getInt("NUM_QUESTIONS"));
     	  					  
-    	  					  System.out.print("This exercise has ");
+    	  					  System.out.print("No. of Questions in the exercise = ");
     	  					  ps2 = Connect.getConnection().prepareStatement(Queries.getCountExQues);
     	  					  ps2.setInt(1, rs1.getInt("EX_ID"));
     	  					  rs2 = ps2.executeQuery(); rs2.next();
-    	  					  System.out.print(rs2.getInt("exQuesCnt")); System.out.println(" Questions currently.");
+    	  					  System.out.println(rs2.getInt("exQuesCnt"));
     	  					  System.out.println("No. of questions that can be further added = " + Integer.toString(rs1.getInt("NUM_QUESTIONS")-rs2.getInt("exQuesCnt")));
     	  					  
     	  					  ps3 = Connect.getConnection().prepareStatement(Queries.getExMappedQues);
@@ -1174,19 +1163,16 @@ public class Instructor {
     	  					  
     	  					  while(curCnt > 0) {
     	  						  
-    	  						  System.out.println("Enter 0 to Go Back Or 1 to continue");
+    	  						  System.out.println("Enter 0 to Go Back Or Enter a question Id to add from " + list.toString());
     	  						  System.out.println("Choice: ");
-    	  						  int choice = ip.nextInt();
+    	  						  int choiceQ = ip.nextInt();
     	  						  
-    	  						  if(choice == 0) {
+    	  						  if(choiceQ == 0) {
     	  							  System.out.println("Going Back");
     	  							  Instructor.viewOrAddExercise(ip, c_id, instructor_id);
     	  							  return;
     	  						  }else {
-    	  							  
-    	  							  System.out.println("Enter a question Id from " + list.toString());
-    	  							  
-    	  							  int choiceQ = ip.nextInt();
+
     	  							  if(list.contains(choiceQ)) {
     	  								  
     	  								  ps6 = Connect.getConnection().prepareStatement(Queries.insertExQuestion);
@@ -1243,6 +1229,132 @@ public class Instructor {
       
       public static void removeQuestionFromExercise(Scanner ip,int exID, int c_id, int instructor_id) {
           
+    	  	System.out.println("************* Removing Questions from the Exercise *******************");
+    	  	PreparedStatement ps = null; PreparedStatement ps1 = null;PreparedStatement ps2 = null; PreparedStatement ps3 = null;
+    	  	PreparedStatement ps4 = null; PreparedStatement ps5 = null;PreparedStatement ps6 = null; PreparedStatement ps7 = null;
+    	  	ResultSet rs = null;	 ResultSet rs1 = null; ResultSet rs2 = null;	 ResultSet rs3 = null;
+    	  	ResultSet rs4 = null;	 ResultSet rs5 = null; ResultSet rs6 = null;	 ResultSet rs7 = null;
+
+    	  	try {
+
+    	  		ps = Connect.getConnection().prepareStatement(Queries.doesExerciseExist);
+    	  		ps.setInt(1, exID);
+    	  		ps.setInt(2, c_id);
+    	  		rs = ps.executeQuery();
+    	  		rs.next();
+
+    	  		if(0 == rs.getInt("ex_exists")) {
+    	  			System.out.println("Invalid Exercise Id entered. Please re-enter");
+    	  			Instructor.viewExercise(ip, c_id, instructor_id);
+    	  			return;
+
+    	  		}else {
+    	  			ps1 = Connect.getConnection().prepareStatement(Queries.viewExerciseDetails);
+    	  			ps1.setInt(1, exID);
+    	  			rs1 = ps1.executeQuery();
+    	  			rs1.next();
+
+    	  			if(rs1.getString("EX_MODE").equals("S")) {
+    	  				System.out.println("The selected exercise is a standard exercise");
+    	  				System.out.println("Maximum Allowed Question in this exercise are " + rs1.getInt("NUM_QUESTIONS"));
+
+    	  				System.out.print("No. of Questions in the exercise = ");
+    	  				ps2 = Connect.getConnection().prepareStatement(Queries.getCountExQues);
+    	  				ps2.setInt(1, rs1.getInt("EX_ID"));
+    	  				rs2 = ps2.executeQuery(); rs2.next();
+    	  				System.out.println(rs2.getInt("exQuesCnt"));
+    	  				System.out.println("No. of questions that can be removed = " + rs2.getInt("exQuesCnt"));
+
+    	  				ps3 = Connect.getConnection().prepareStatement(Queries.getExMappedQues);
+    	  				ps3.setInt(1, exID);
+    	  				rs3 = ps3.executeQuery(); //rs3.next();
+
+
+    	  				List<Integer> list = null;
+    	  				if(rs2.getInt("exQuesCnt") > 0) {
+    	  					System.out.println("Question Ids that can be removed are");
+    	  					list = new ArrayList<Integer>();
+
+    	  					while(rs3.next()) {
+    	  						System.out.println(rs3.getInt("question_id"));
+    	  						list.add(rs3.getInt("question_id"));
+    	  					}
+    	  					
+    	  					System.out.println("View all current questions ? (y/n)");
+    	  					String c = ip.next();
+    	  					if(c.equalsIgnoreCase("y")) {
+    	  						Instructor.showResultsSet(ps3.executeQuery());
+    	  					}else {
+    	  						//do nothing
+    	  					}
+
+    	  				}
+
+    	  				System.out.println("Removing Questions now");
+
+    	  				int curCnt = rs1.getInt("NUM_QUESTIONS")-rs2.getInt("exQuesCnt");
+
+    	  				while(curCnt < rs1.getInt("NUM_QUESTIONS")) {
+
+    	  					System.out.println("Enter 0 to Go Back Or Enter a question Id to remove from " + list.toString());
+    	  					System.out.println("Choice: ");
+    	  					int choiceQ = ip.nextInt();
+
+    	  					if(choiceQ == 0) {
+    	  						System.out.println("Going Back");
+    	  						Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+    	  						return;
+    	  					}else {
+    	  						
+    	  						if(list.contains(choiceQ)) {
+
+    	  							ps6 = Connect.getConnection().prepareStatement(Queries.deleteExQuestion);
+    	  							ps6.setInt(1, exID);
+    	  							ps6.setInt(2, choiceQ);
+    	  							ps6.executeQuery();
+    	  							list.remove(list.indexOf(choiceQ));
+    	  						}else {
+    	  							System.out.println("The entered question is not available. Try again");
+    	  							continue;
+    	  						}
+    	  					}
+    	  					curCnt++;
+    	  				}
+
+    	  				System.out.println("The Exercise is empty now !!!");
+    	  				Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+
+    	  			}else {
+
+    	  				System.out.println("The exercise is an adaptive one !!! ");
+    	  				System.out.println("No need to remove/add any question. Questions will be randomly selected from relevant topics ");
+    	  				Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+    	  				return;
+
+    	  			}
+    	  		}
+
+
+    	  	}catch(Exception e){
+    	  		e.printStackTrace();
+    	  	}finally {
+    	  		Connect.close(ps);
+    	  		Connect.close(ps1);
+    	  		Connect.close(ps2);
+    	  		Connect.close(ps3);
+    	  		Connect.close(ps4);
+    	  		Connect.close(ps5);
+    	  		Connect.close(ps6);
+    	  		Connect.close(rs);
+    	  		Connect.close(rs1);
+    	  		Connect.close(rs2);
+    	  		Connect.close(rs3);
+    	  		Connect.close(rs4);
+    	  		Connect.close(rs5);
+    	  		Connect.close(rs6);
+    	  	}
+
+    	  
       }
 
       /*
