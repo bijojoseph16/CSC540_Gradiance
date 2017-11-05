@@ -324,6 +324,10 @@ public class Instructor {
                  Instructor.enrollOrDropStudentFromViewCourse(ip, cID, instructorID);
                  return;
                  
+             }else if (4 == choice) {
+                 Instructor.viewReport(ip, cID, instructorID);
+                 return;
+                 
              } else {
                  System.out.println("Invalid input.");
                  
@@ -1474,8 +1478,41 @@ public class Instructor {
       /*
        * 
        */
-      public static void viewReport() {
-          
+      public static void viewReport(Scanner ip, int c_id, int instructorID) {
+    	  
+    	  	System.out.println("*************** Display Student Report ****************");
+    		PreparedStatement ps = null; PreparedStatement ps1 = null;
+    		ResultSet rs = null; ResultSet rs1 = null; ResultSet rs2 = null;
+	
+    		try{
+    			
+    			ps = Connect.getConnection().prepareStatement(Queries.showStudentReportForCourse);
+    			ps.setInt(1, c_id);
+    			Instructor.showResultsSet(ps.executeQuery());
+    			
+    			while(true) {
+	    			System.out.println("0. Go Back");
+	    			int choice = ip.nextInt();
+	    			
+	    			if(choice == 0) {
+	    				Instructor.viewCourse(ip, instructorID);
+	    				return;
+	    			}else {
+	    				System.out.println("Invalid Input. Try Again");
+	    			}
+    			}
+    			
+    			
+    		}catch(Exception e){
+    			
+    			e.printStackTrace();
+    			
+    		}finally {
+    			
+    			Connect.close(ps);
+    			
+    		}
+      
       }     
       
       /***********Functions called from viewOrAddTA******************************************/

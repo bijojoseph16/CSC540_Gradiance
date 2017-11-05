@@ -303,6 +303,11 @@ public class Queries{
 			"where ehq.exercise_id = ? and ehq.question_id = q.question_id and q.question_id " + 
 			"NOT IN (select q1.question_id from question q1, exercise_has_question eq where eq.ex_id = ? and q1.question_id = eq.question_id)";
     
+    static final String showStudentReportForCourse = "select s.student_id, s.firstname, s.lastname, s.userid, sse.ex_id, sse.attempt_number, sse.points_earned as Grades " + 
+    													"from student s, student_submits_exercise sse, course c, course_has_exercise che " + 
+    													"where s.student_id = sse.student_id and c.c_id = ? and c.c_id = che.course_id and che.exercise_id = sse.ex_id " + 
+    													"order by s.student_id, sse.ex_id";
+    
 
     static final String searchQuestion="Select * from question where question_id=?";
     
