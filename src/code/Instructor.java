@@ -818,7 +818,9 @@ public class Instructor {
     	    PreparedStatement psAddQuestionToQB = null;
     	    PreparedStatement psAddQuestionToQuestionHasTopic = null;
     	    PreparedStatement psAddQuestionToParameter = null;
-    	  
+    	    PreparedStatement psListTopics = null;
+    	    ResultSet rsListTopics = null;
+    	    
             System.out.println("1. Enter question id");
             int qid=Integer.parseInt(ip.nextLine());
           
@@ -827,44 +829,98 @@ public class Instructor {
           
             System.out.println("3. Enter question text");
             String qtext = ip.nextLine();
-          
-            System.out.println("4. Enter topic the question falls under");
-            String topic = ip.nextLine();
-
-            System.out.println("5. Enter difficulty level of the question(Scale 1 - 6)");
+            
+            //Right now we only allow the instructor to add 4 options
+            System.out.println("Please enter 4 options");
+            for(int i = 0; i < 4; i++) {
+                qtext += "\n" + String.valueOf((char)(97 + i)) + ") " + ip.nextLine();
+            }
+            
+            //System.out.print(qtext);
+            System.out.println();
+            System.out.println("4. Enter difficulty level of the question(Scale 1 - 6)");
             int qdif = Integer.parseInt(ip.nextLine());
 
+            //Solution is a generic solution not the actual answer
+            System.out.println("5. Enter solution of the question");
+            qsoln = ip.nextLine();
+            
+            //To reach the answer
+            System.out.println("6. Enter hint");
+            hint = ip.nextLine();
+
+            try {
+                psAddQuestionToQB = Connect.getConnection().prepareStatement(Queries.addQuestion);
+                //psAddQuestionToQuestionHasTopic = Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
+                
+                psAddQuestionToQB.setInt(1, qid);
+                psAddQuestionToQB.setString(2, qtext);
+                psAddQuestionToQB.setString(3, qsoln);
+                psAddQuestionToQB.setInt(4, qdif);
+                psAddQuestionToQB.setString(5, hint);
+                psAddQuestionToQB.setInt(6, qtype);
+
+                psAddQuestionToQB.executeQuery();
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                Connect.close(psAddQuestionToQB);
+            }
+            
+            //List all the topics that question could beong to 
+            System.out.println("Please select the Topic ID the question belongs to from the list:");
+            try {
+               psListTopics =  Connect.getConnection().prepareStatement(Queries.listTopics);
+               rsListTopics = psListTopics.executeQuery();
+               Instructor.showResultsSet(rsListTopics);
+            } catch(Exception e) {
+                e.printStackTrace();
+            } finally {
+               Connect.close(psListTopics);
+               Connect.close(rsListTopics);
+            }
+  
+            //Select the topic ID's the question can belong to
+            while(true) {
+                System.out.println("4. Enter topicID the question falls under");
+                int topicID = Integer.parseInt(ip.nextLine());
+                try {
+                    psAddQuestionToQuestionHasTopic = Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
+                    psAddQuestionToQuestionHasTopic.setInt(1,topicID);
+                    psAddQuestionToQuestionHasTopic.setInt(2,qid);
+                    psAddQuestionToQuestionHasTopic.executeQuery();
+
+                } catch(Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    Connect.close(psAddQuestionToQuestionHasTopic);
+                }
+                System.out.println("Enter 0 to stop else press 1 to continue");
+                int choice = Integer.parseInt(ip.nextLine());
+                if(0 == choice) {
+                    break;
+                }
+                else {
+                    continue;
+                }
+              
+              }
+ 
             if(qtype == 0) {
-              System.out.println("6. Enter solution of the question");
-              qsoln = ip.nextLine();
-              System.out.println("7. Enter hint");
-              hint = ip.nextLine();
-              System.out.println("8. Enter answer");
-              qans = ip.nextLine();
-              paramID = 0;
-              parameters = "NA";
               try {
-                  psAddQuestionToQB = Connect.getConnection().prepareStatement(Queries.addQuestion);
-                  psAddQuestionToQuestionHasTopic = Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
                   
-                  psAddQuestionToQB.setInt(1, qid);
-                  psAddQuestionToQB.setString(2, qtext);
-                  psAddQuestionToQB.setString(3, qsoln);
-                  psAddQuestionToQB.setInt(4, qdif);
-                  psAddQuestionToQB.setString(5, hint);
-                  psAddQuestionToQB.setInt(6, qtype);
-                  
-                  psAddQuestionToQuestionHasTopic.setString(1,topic);
-                  psAddQuestionToQuestionHasTopic.setInt(2,qid);
-                  
+                  System.out.println("8. Enter answer");
+                  qans = ip.nextLine();
+                  paramID = 0;
+                  parameters = "NA";
+
                   psAddQuestionToParameter = Connect.getConnection().prepareStatement(Queries.addQuestionToParameter);
                   psAddQuestionToParameter.setInt(1, qid);
                   psAddQuestionToParameter.setInt(2, paramID);
                   psAddQuestionToParameter.setString(3, parameters);
-                  psAddQuestionToParameter.setString(4, qans);
+                  psAddQuestionToParameter.setString(4, qans);         
                   
-                  psAddQuestionToQB.executeQuery();
-                  psAddQuestionToQuestionHasTopic.executeQuery();
                   psAddQuestionToParameter.executeQuery();
                   
                   System.out.println("Question has been added to question bank!");
@@ -873,9 +929,7 @@ public class Instructor {
                     System.out.println("Could not add question to QB");
                     e.printStackTrace();
                } finally {
-                   Connect.close(psAddQuestionToQB);
-                   Connect.close(psAddQuestionToQuestionHasTopic);
-                   Connect.close(psAddQuestionToParameter);
+                    Connect.close(psAddQuestionToParameter);
                }
              
              int arg;
@@ -893,53 +947,16 @@ public class Instructor {
             
             else if(qtype == 1) {
                 System.out.println("You selected parametrized question.Please enter parameters");
-                System.out.println("Enter Number of combination of parameters for the question: ");
+                System.out.println("Enter combinations of parameters for the question (max3): ");
                 paramID = 1;
                 int paramIDIndex = Integer.parseInt(ip.nextLine());
-                
-                try {
-                  psAddQuestionToQB = Connect.getConnection().prepareStatement(Queries.addQuestion);
-                  System.out.println("6. Enter solution of the question");
-                  qsoln = ip.nextLine();
-                  System.out.println("7. Enter hint");
-                  hint = ip.nextLine();
-                  
-                  psAddQuestionToQB.setInt(1, qid);
-                  psAddQuestionToQB.setString(2, qtext);
-                  psAddQuestionToQB.setString(3, qsoln);
-                  psAddQuestionToQB.setInt(4, qdif);
-                  psAddQuestionToQB.setString(5, hint);
-                  psAddQuestionToQB.setInt(6, qtype);
-
-                  psAddQuestionToQB.executeQuery();
-
-                } catch(Exception e) {
-                    System.out.println("Could not add question to QB");
-                    e.printStackTrace();
-                } finally {
-                    Connect.close(psAddQuestionToQB);
-                }
-                
-                try {
-                  psAddQuestionToQuestionHasTopic = Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
-                  
-                  psAddQuestionToQuestionHasTopic.setString(1,topic);
-                  psAddQuestionToQuestionHasTopic.setInt(2,qid);
-
-                  psAddQuestionToQuestionHasTopic.executeQuery();
-                } catch(Exception e) {
-                    System.out.println("Could not add question to Topic has question");
-                    e.printStackTrace();
-                } finally {
-                    Connect.close(psAddQuestionToQuestionHasTopic);
-                }
-                
-                
+                                
+                //Assumption only 3 parameters possible
                 for(int i = 0; i < paramIDIndex; i++) {
                     try {
-                        System.out.println("Enter parameter combination");
+                        System.out.println("Enter parameter combination(Example x,y,x)");
                         parameters = ip.nextLine();
-                        System.out.println("Enter answer");
+                        System.out.println("Enter answer for this parameter combination, it should be present in the option.");
                         qans = ip.nextLine();
                         try {
                             

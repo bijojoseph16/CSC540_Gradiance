@@ -304,6 +304,8 @@ public class Queries{
     //Query to add question to queston bank
     static final String searchQuestionByQId = "Select * from question where question_id = ?";
     
+    //List topics
+    static final String listTopics = "Select * from topic";
     static final String addQuestion="Insert into question (question_id, text, solution, question_level, hint, qtype) "
     		+ " values(?,?,?,?,?,?)";
     
@@ -311,7 +313,7 @@ public class Queries{
             + "values(?,?,?,?)";
     
     static final String addQuestiontoTopic="Insert into topic_has_question (topic_id, question_id) "+
-    		" values((select topic_id from topic where topic_name=?),?)";
+    		" values(?,?)";
     
     static final String searchQuestionbyTopic="Select * from Question q,topic t, topic_has_question tq "+
     		" where q.question_id=tq.question_id and tq.topic_id=t.topic_id and t.topic_name=?";
