@@ -2,6 +2,8 @@ package code;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import dbconnect.Connect;
 
@@ -1384,20 +1386,259 @@ public class Instructor {
   			System.out.println("Generated Exercise ID is " + newExId);
   			System.out.println("Fill up the other enteries as shown in the example for each input asked");
   			
-  			System.out.println("Enter the name of HW (HW" + newExId + " is preferred)");
+  			System.out.println("Enter the name of HW (HW" + newExId + " is preferred) or press 0 to Go Back");
   			String hwName = ip.next();
-  			System.out.println("Enter the number of questions in the Exercise");
-  			int numQues = ip.nextInt();
-  			System.out.println("Enter Points for Correct Answer (a positive number eg. 3)");
-  			int ptCorr = ip.nextInt();
-  			System.out.println("Enter Points for Incorrect Answer (a negative number eg. -1)");
-  			int ptIncorr = ip.nextInt();
-  			System.out.println("Enter the scoring Policy (eg. Latest_Attempt, Average_Attempt, Maximum_Score)");
-  			String policy = ip.next();
-  			System.out.println("Enter the no. of retries (eg. 3)");
-  			int retries = ip.nextInt();
-  			System.out.println("Enter Mode(Adaptive or Standard) of the Exercise (eg. A or S)");
-  			String mode = ip.next();
+  			 
+  			if(hwName.equals("0")) {
+  				Instructor.viewExercise(ip, c_id, instructor_id);
+  				return;
+  			}
+  			//Enter number of questions
+  			int numQues = 0;
+  			while(true) {
+	  			
+  				System.out.println("Enter the number of questions in the Exercise or press 0 to Go Back");
+	  			numQues = ip.nextInt();
+	  			
+	  			PreparedStatement pstemp1 = Connect.getConnection().prepareStatement(Queries.numQuesInTable);
+	  			ResultSet rstemp1 = pstemp1.executeQuery();
+	  			rstemp1.next();
+	  			
+	  			if(numQues == 0) {
+	  				Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+	  			}
+	  			
+	  			if(numQues < 1 || numQues > rstemp1.getInt("numQues")) {
+	  				System.out.println("Invalid Input. Re-enter");
+	  				continue;
+	  			}else {
+	  				break;
+	  			}
+  			}
+  			
+  			//Enter points for correct Answer
+  			int ptCorr = 0;
+  			while(true) {
+	  			
+  				System.out.println("Enter Points for Correct Answer (a positive number between [1,5] eg. 3) or 0 to Go Back");
+  	  			ptCorr = ip.nextInt();
+	  			
+	  			if(ptCorr == 0) {
+	  				Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+	  			}
+	  			
+	  			if(ptCorr < 1 || ptCorr > 5) {
+	  				System.out.println("Invalid Input. Re-enter");
+	  				continue;
+	  			}else {
+	  				break;
+	  			}
+  			}
+  			
+  			
+  			
+  			//Enter points for incorrct aswer
+  			int ptIncorr = 0;
+  			while(true) {
+	  			
+  				System.out.println("Enter Points for Incorrect Answer (a negative number eg. -1) or 0 to Go Back");
+  				ptIncorr = ip.nextInt();
+	  			
+	  			if(ptIncorr == 0) {
+	  				Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+	  			}
+	  			
+	  			if(ptIncorr > 0 || (-1)*ptIncorr >= ptCorr) {
+	  				System.out.println("Invalid Input. Re-enter");
+	  				continue;
+	  			}else {
+	  				break;
+	  			}
+  			}
+  			
+  			//Enter Scoring Policy	
+  			String policy = "";
+  			while(true) {
+  				System.out.println("Enter the scoring Policy number (eg. 1 for Latest_Attempt, 2 for Average_Attempt, 3 for Maximum_Score) or 0 to Go Back");
+  				int policyNum = 0;
+  				policyNum = ip.nextInt();
+  				//policy = ip.next();
+	  			
+	  			if(policyNum == 0) {
+	  				Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+	  			}
+	  			
+	  			if(policyNum > 3 || policyNum <= 0) {
+	  				System.out.println("Invalid Input. Re-enter");
+	  				continue;
+	  			}else {
+	  				if(policyNum == 1) {
+	  					policy = "Latest_Attempt";
+	  				}else if(policyNum == 2) {
+	  					policy = "Average_Attempt";
+	  				}else if(policyNum == 3) {
+	  					policy = "Maximum_Score";
+	  				}
+	  				break;
+	  			}
+  			}
+  			
+  			
+  			
+  			int retries = 0;
+  			while(true) {
+	  			
+  				System.out.println("Enter the no. of retries between [1,2147483647] (eg. 3) or 0 to Go Back");
+  				retries = ip.nextInt();
+	  			
+	  			if(retries == 0) {
+	  				Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+	  			}
+	  			
+	  			if(retries < 0 || retries > 2147483647) {
+	  				System.out.println("Invalid Input. Re-enter");
+	  				continue;
+	  			}else {
+	  				break;
+	  			}
+  			}
+  			
+  			
+  			//Enter the mode for this question
+  			String mode = "";
+  			while(true) {
+  				
+  				System.out.println("Enter Mode(Adaptive or Standard) of the Exercise (eg. A or S) or 0 to Go Back");
+  				mode = ip.next();
+	  			
+	  			if(mode.equals("0")) {
+	  				Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+	  			}
+	  			
+	  			if(!mode.equalsIgnoreCase("A") && !mode.equalsIgnoreCase("S")) {
+	  				System.out.println("Invalid Input. Re-enter");
+	  				continue;
+	  			}else {
+	  			
+	  				break;
+	  			}
+  			}
+  			
+  			
+  			
+  			System.out.println("Define a duration for the Exercise");
+  			System.out.println("The format followed for timestamp is 'YYYY-MM-DD HH24:MI:SS'. Input accordingly");
+  			System.out.println("Enter Start TimeStamp for this exercise (eg. 2017-10-16 00:00:00)");
+  			
+  			
+  			
+  			String stDate = "";
+  			String stTime = "";
+  			String stDateTs = "";
+  			
+  			while(true) {
+  				
+  				System.out.println("Enter Start Date (eg. 2017-10-16) or 0 to Go Back");
+  				SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-mm-dd");
+  				stDate = ip.next();
+  				
+  				if(stDate.equals("0")) {
+  					Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+  				}
+  				
+	  	  	     try {   
+	  	  	    	 		dateFormat.parse(stDate);
+	  	  	     }
+	  	  	     	catch(ParseException e) {
+	  	  	     	System.out.println("Incorrect Date Format Entered. Enter as YYYY-MM-DD. please re-enter");
+	  	  	     	continue;
+	  	  	     }
+	  	  	     break;
+  			}
+  			
+  			while(true){
+  				
+	  			System.out.println("Enter Start Time (eg. 00:00:00) or 0 to Go Back");
+	  			SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("hh:mm:ss");
+	  			stTime = ip.next();
+	  			
+	  			if(stTime.equals("0")) {
+  					Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+  				}
+	  			
+		  	    	try {   
+			    	 		timeFormat.parse(stTime);
+			     }
+			     	catch(ParseException e) {
+			     	System.out.println("Incorrect Time Format Entered. Enter as HH:MM:SS. please re-enter");
+			     	continue;
+			     }
+	  	        
+		     		break;
+  			}
+  			
+  			stDateTs = stDate + " " + stTime;
+	  	    	
+  			System.out.println("Enter End TimeStamp for this exercise (eg. 2017-10-16 00:00:00.000)");
+  			
+  			
+  			String endDate = "";
+  			String endTime = "";
+  			String endDateTs = "";
+  			
+  			while(true) {
+  				
+  				System.out.println("Enter End Date (eg. 2017-10-16) or 0 to Go Back");
+  				SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-mm-dd");
+  				endDate = ip.next();
+  				
+  				if(endDate.equals("0")) {
+  					Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+  				}
+  				
+	  	  	     try {   
+	  	  	    	 		dateFormat.parse(endDate);
+	  	  	     }
+	  	  	     	catch(ParseException e) {
+	  	  	     	System.out.println("Incorrect Date Format Entered. Enter as YYYY-MM-DD. please re-enter");
+	  	  	     	continue;
+	  	  	     }
+	  	  	     break;
+  			}
+  			
+  			while(true){
+  				
+	  			System.out.println("Enter End Time (eg. 00:00:00) or to Go Back");
+	  			SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("hh:mm:ss");
+	  			endTime = ip.next();
+	  			
+	  			if(endTime.equals("0")) {
+  					Instructor.viewExercise(ip, c_id, instructor_id);
+	  				return;
+  				}
+	  			
+		  	    	try {   
+			    	 		timeFormat.parse(endTime);
+			     }
+			     	catch(ParseException e) {
+			     	System.out.println("Incorrect Time Format Entered. Enter as HH:MM:SS. please re-enter");
+			     	continue;
+			     }
+	  	        
+		     		break;
+  			}
+  			
+  			endDateTs = endDate + " " + endTime;
+  			
   			
   			System.out.println("We are adding this exercise to the Database... Please wait");
   			
@@ -1412,24 +1653,6 @@ public class Instructor {
   			ps1.setInt(7, retries);
   			ps1.setString(8, mode);
   			ps1.executeQuery();
-  			
-  			System.out.println("Exercise Added");
-  			
-  			System.out.println("Define a duration for the Exercise");
-  			System.out.println("The format followed for timestamp is 'YYYY-MM-DD HH24:MI:SS.FF'. Input accordingly");
-  			System.out.println("Enter Start TimeStamp for this exercise (eg. 2017-10-16 00:00:00.000)");
-  			System.out.println("Enter Start Date (eg. 2017-10-16)");
-  			String stDate = ip.next();
-  			System.out.println("Enter Start Time (eg. 00:00:00.000)");
-  			String stTime = ip.next();
-  			String stDateTs = stDate + " " + stTime;
-  			
-  			System.out.println("Enter End TimeStamp for this exercise (eg. 2017-10-16 00:00:00.000)");
-  			System.out.println("Enter End Date (eg. 2017-10-16)");
-  			String endDate = ip.next();
-  			System.out.println("Enter End Time (eg. 00:00:00.000)");
-  			String endTime = ip.next();
-  			String endDateTs = endDate + " " + endTime;
   			
   			//insert statement to add exercise duration if it does not exist
   			ps5 = Connect.getConnection().prepareStatement(Queries.checkDurationExist);

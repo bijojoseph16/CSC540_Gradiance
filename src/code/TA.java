@@ -8,87 +8,79 @@ import dbconnect.Connect;
 public class TA{
 
 	public static void showHomePage(Scanner ip,int studentid) throws NoSuchElementException {
-	while(true) {
-		 System.out.println("1. View Profile");
-		 System.out.println("2. View Course");
-		 System.out.println("3. Logout");
-		 
-		 
-		 int choice=ip.nextInt();
-		 
-		 switch(choice) {
-		 case 1: TA.showProfile(ip,studentid);
-		
-		 case 2: TA.showCourse(ip,studentid);
+		while(true) {
+			 System.out.println("1. View Profile");
+			 System.out.println("2. View Course");
+			 System.out.println("3. Logout");
 			 
-		 case 3: TA.logout(studentid,ip);	 
-		 
-		 }
-	}
-
+			 
+			 int choice=ip.nextInt();
+			 
+			 switch(choice) {
+			 case 1: TA.showProfile(ip,studentid);return;
+			 case 2: TA.showCourse(ip,studentid); return;
+			 case 3: TA.logout(studentid,ip); return;
+			 default:
+				 System.out.println("Invalid Input. Try again...");
+			 }
+		}
 	}
 	
 	public static void showProfile(Scanner ip,int studentid) {
 		
-		   String getstudentinfo="Select * from student where student_id=" +studentid;
+		  String getstudentinfo="Select * from student where student_id=" +studentid;
 		  try {
-	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(getstudentinfo);
+	          
+			  PreparedStatement pstmt=Connect.getConnection().prepareStatement(getstudentinfo);
 	          ResultSet rs=pstmt.executeQuery();
 	          
-	          while(rs.next()) {
-	        	  System.out.println("1. First Name :");
-	          	System.out.println(rs.getString("firstname"));
-	          	System.out.println("2. Last Name :");
-	          	System.out.println(rs.getString("lastname"));
-	          	System.out.println("3. Userid :");
-	          	System.out.println(rs.getString("userId"));
-	          	//Connect.close(pstmt);
-	          	
-	          }
+		          while(rs.next()) {
+		        	  	System.out.print("1. First Name :");
+		          	System.out.println(rs.getString("firstname"));
+		          	System.out.print("2. Last Name :");
+		          	System.out.println(rs.getString("lastname"));
+		          	System.out.print("3. Userid :");
+		          	System.out.println(rs.getString("userId"));
+		          }
 	          }
 	          catch(SQLException e) {
 	          	e.printStackTrace();
 	          }
 		  
-//			System.out.println("2. Last Name :");
-//			final String getlastname="Select lastname from student where student_id=" +studentid;
-//			System.out.println("3. Student Id :" + studentid);
-//			
-			System.out.println("0. Go Back");
-//			
+			System.out.println("0. Go Back");			
 			int gb=ip.nextInt();
-//			
 			if(gb==0) {
 				TA.showHomePage(ip,studentid);
+				return;
 			}
-		  
-		
 	}
 	
 	public static void showCourse(Scanner ip,int studentid) {
+		
 		System.out.println("Please enter Course ID: ");
-		//Scanner scan=new Scanner(System.in);
 		int courseinput=ip.nextInt();
 		
 		String getcourseinfo="Select * from course where c_id="+courseinput;
 		String getcoursesd="Select * from course_has_duration where course_id="+courseinput;
-		 try {
+		 
+		try {
 	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(getcourseinfo);
 	          ResultSet rs=pstmt.executeQuery();
 	          
 	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(getcoursesd);
 	          ResultSet rs2=pstmt2.executeQuery();
+	        
 	         while(rs.next()) {
-	        	 System.out.println("1.Course Name: ");
-	        	 System.out.println(rs.getString("course_name"));
+		        	 System.out.println("1.Course Name: ");
+		        	 System.out.println(rs.getString("course_name"));
 	         }
+	         
 	         while(rs2.next()) {
-		System.out.println("2.Start Date: ");
-		System.out.println(rs2.getString("start_date"));
-		System.out.println("3. End Date: ");
-		System.out.println(rs2.getString("end_date"));
-		
-		 }
+				System.out.println("2.Start Date: ");
+				System.out.println(rs2.getString("start_date"));
+				System.out.println("3. End Date: ");
+				System.out.println(rs2.getString("end_date"));			
+			 }
 		 }
 		 catch(SQLException e) {
 	          	e.printStackTrace();
@@ -97,12 +89,13 @@ public class TA{
 			System.out.println("5. Enroll/Drop a Student");
 			System.out.println("6. View Report");
 			System.out.println("0. Go Back");
-		int option=ip.nextInt();
-		switch(option) {
-		case 0: TA.showHomePage(ip,studentid);
-		case 4: TA.viewExercise(ip,studentid,courseinput);
-		case 5: TA.enrollDropStudent(ip,courseinput,studentid); 
-		case 6: TA.viewReport(ip,courseinput,studentid);
+			int option=ip.nextInt();
+			
+			switch(option) {
+			case 0: TA.showHomePage(ip,studentid);
+			case 4: TA.viewExercise(ip,studentid,courseinput);
+			case 5: TA.enrollDropStudent(ip,courseinput,studentid); 
+			case 6: TA.viewReport(ip,courseinput,studentid);
 		}
 		
 	}
@@ -114,8 +107,16 @@ public class TA{
 	
 	public static void viewExercise(Scanner ip,int studentid,int courseinput) {
 		System.out.println("0. Go Back");
+		String getExCnt = "Select count(*) as \"exCnt\" from exercise where ex_id in (select exercise_id from course_has_exercise where course_id="+courseinput+")";
 		String getexercise="Select * from exercise where ex_id in (select exercise_id from course_has_exercise where course_id="+courseinput+")";
 		 try {
+			  PreparedStatement ps = Connect.getConnection().prepareStatement(getExCnt);
+			  ResultSet rs1 = ps.executeQuery();
+			  rs1.next();
+			  if(rs1.getInt("exCnt") > 0) {
+				  
+			  }
+			 
 	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(getexercise);
 	          ResultSet rs=pstmt.executeQuery();
 	          
@@ -123,14 +124,23 @@ public class TA{
 		 }
 		 catch(SQLException e) {
 	          	e.printStackTrace();
-	          }
-		int gbsc=ip.nextInt();
+	      }
 		
-		if(gbsc==0) {
-			TA.showCourse(ip,studentid);
-		}
+		 int gbsc=ip.nextInt();
+		
+			if(gbsc==0) {
+				TA.showCourse(ip,studentid);
+				return;
+			}else {
+				System.out.println("Invalid Input. Try Again");
+				TA.viewExercise(ip, studentid, courseinput);
+				return;
+			}
 		
 	}
+	
+	
+	
 	 public static void showResultsSet(ResultSet rs) {
 	    	ResultSetMetaData rsmd;
 			try {
