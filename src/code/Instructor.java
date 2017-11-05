@@ -1,6 +1,4 @@
 package code;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.sql.*;
@@ -62,7 +60,7 @@ public class Instructor {
                  Instructor.enrollOrDropStudentFromInstructorLogin(ip, instructorID);
                  
              } else if(4 == choice) {
-                 Instructor.searchOrAddQuestionInQB(ip);
+                 Instructor.searchOrAddQuestionInQB(ip,instructorID);
                  
              }else if(5 == choice) {
                  Login.startPage(ip);
@@ -215,8 +213,24 @@ public class Instructor {
          return;
      }
 
-     public static void searchOrAddQuestionInQB(Scanner ip) {
+     public static void searchOrAddQuestionInQB(Scanner ip,int instructorID) {
+         System.out.println("Press 1 to Search question in question bank");
+         System.out.println("Press 2 to Add question to question bank");
+         System.out.println("Press 0 to go back");
          
+         int arg=ip.nextInt();
+         
+         if(arg==1) {
+        	 searchQuestionInQB(ip,instructorID);
+         }
+         
+         else if(arg==2) {
+        	 addQuestionInQB(ip,instructorID);
+         }
+         
+         else if(arg==0) {
+        	 Instructor.showHomePage(ip, instructorID);
+         }
      }
 
      /************Functions called from viewOrAddCourse****************************/
@@ -686,15 +700,115 @@ public class Instructor {
       /*
        * Instructor can search a question 
        */
-      public static void searchQuestionInQB(Scanner ip, int qID) {
+      public static void searchQuestionInQB(Scanner ip,int instructorID) {
+    	  ip.nextLine();
+          System.out.println("1. Search by question id ");
+          System.out.println("2. Search by topic name");
+          System.out.println("0. Go Back");
           
+          int arg=ip.nextInt();
+          
+          if(arg==1) {
+        	  System.out.println("Enter question id");
+        	   
+        	  int qid=ip.nextInt();
+        	  
+        	  try {
+    	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.searchQuestion);
+    	          pstmt.setInt(1, qid);
+    	          ResultSet rs=pstmt.executeQuery();
+    	          
+    	          showResultsSet(rs);
+    		 }
+    		 catch(SQLException e) {
+    	          	e.printStackTrace();
+    	          }
+        	  
+        	  System.out.println("Press 0 to go back");
+        	  int arg2=ip.nextInt();
+              
+              if(arg2==0) {
+            	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+              }
+          }
+          
+          else if(arg==2) {
+        	  ip.nextLine();
+        	  System.out.println("Enter topic name");
+        	  String topic=ip.nextLine();
+        	  
+        	  try {
+    	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(Queries.searchQuestionbyTopic);
+    	          pstmt2.setString(1,topic);
+    	          ResultSet rs=pstmt2.executeQuery();
+    	          
+    	          showResultsSet(rs);
+    		 }
+    		 catch(SQLException e) {
+    	          	e.printStackTrace();
+    	          }
+        	  System.out.println("Press 0 to go back");
+        	  int arg3=ip.nextInt();
+              
+              if(arg3==0) {
+            	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+              }
+        	  
+          }
+          
+          else if(arg==0) {
+        	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+          }
       }
        
       /*
        * Instructor can add a question 
        */
-      public static void addQuestionInQB(Scanner ip) {
+      public static void addQuestionInQB(Scanner ip,int instructorID) {
+    	  ip.nextLine();
+          System.out.println("1. Enter question id");
+          int qid=ip.nextInt();
+          System.out.println("2. Enter question text");
+          String qtext=ip.nextLine();
+          System.out.println("3. Enter solution of the question");
+          String qsoln=ip.nextLine();
+          System.out.println("4. Enter difficulty level of the question");
+          int qdif=ip.nextInt();
+          System.out.println("5. Enter hint");
+          String hint=ip.nextLine();
+          System.out.println("6. Enter question type(0 for fixed and 1 for parametrized");
+          int qtype=ip.nextInt();
+          System.out.println("7. Enter topic name");
+          String topic=ip.nextLine();
           
+          try {
+	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.addQuestion);
+	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
+	          
+	          pstmt.setInt(1, qid);
+	          pstmt.setString(2, qtext);
+	          pstmt.setString(3, qsoln);
+	          pstmt.setInt(4, qdif);
+	          pstmt.setString(5, hint);
+	          pstmt.setInt(6, qtype);
+	          pstmt2.setString(1,topic);
+	          pstmt2.setInt(2,qid);
+	          ResultSet rs=pstmt.executeQuery();
+	          ResultSet rs2=pstmt2.executeQuery();
+	          
+	          System.out.println("Question has been added to question bank!");
+		 }
+		 catch(SQLException e) {
+	          	e.printStackTrace();
+	          }
+          
+          System.out.println("Press 0 to go back");
+          int arg=ip.nextInt();
+          
+          if(arg==0) {
+        	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+          }
+         
       }
 
       /**************Functions called from viewCourse**********************************/
@@ -860,6 +974,30 @@ public class Instructor {
           
       }
       
-      
+      public static void showResultsSet(ResultSet rs) {
+	    	ResultSetMetaData rsmd;
+			try {
+				int numRows = 0;
+				rsmd = rs.getMetaData();
+				int columnsNumber = rsmd.getColumnCount();
+				while (rs.next()) {
+					numRows += 1;
+					for (int i = 1; i <= columnsNumber; i++) {
+						if (i > 1) System.out.print(",  ");
+						String columnValue = rs.getString(i);
+						System.out.print(rsmd.getColumnName(i) + ": " + columnValue);
+					}
+					System.out.println("");
+		    	   }
+				
+				if(0 == numRows) {
+					System.out.println("No Records found !!!");
+				}
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    }
    
 }
