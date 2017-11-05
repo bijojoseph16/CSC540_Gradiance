@@ -254,11 +254,11 @@ public class Queries{
               " cid := ?;"+ 
               " select count(*) into isStudent " + 
               " from PG_ENROLLED " + 
-              " where student_id = sid and ta_course = cid; " + 
+              " where student_id = sid and course_id = cid; " + 
               " if isStudent > 0 then " + 
                 " raise student_ex; " +
               " else " +
-                " Insert into pg_enrolled(student_id, course_id) " +
+                " Insert into pg(student_id, ta_course) " +
                 " values (sid, cid); " + 
               " end if; "+
               "end;";

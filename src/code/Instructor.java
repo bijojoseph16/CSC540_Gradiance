@@ -855,7 +855,7 @@ public class Instructor {
       }
       
       //Check should be put on PG_ENROLLED table so that a student 
-      //cannot ne both TA and enrolled for the course
+      //cannot be both TA and enrolled for the course
       public static void addTA(Scanner ip, int c_id) {
           PreparedStatement psIsPG = null;
           PreparedStatement psAddTA = null;
@@ -885,14 +885,14 @@ public class Instructor {
                   
                 } catch (SQLException e) {
                     if(e.getSQLState().startsWith("23")) {
-                        System.out.println("Could not enroll PG Student, he is currently enrolled in the course\n");
+                        System.out.println("Could not add TA,  he is already TA for a course\n");
                     }
                     
                     //Need to catch this PL-SQL exception
                     else {
-                      System.out.println("Could not add TA as he is a student");
+                      System.out.println("Could not add TA as he is enrolled in the course ");
                       //Instructor.enrollOrDropStudent(ip);
-                      //e.printStackTrace();
+                      e.printStackTrace();
                     }
                     
                 } catch(Exception e){
@@ -908,7 +908,7 @@ public class Instructor {
                 }
             }
             else {
-                System.out.println("Could not execute query as student does not exist");
+                System.out.println("Could not execute query as student does not exist or is a UG student");
                 //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
             }
             Instructor.viewOrAddTA(ip, c_id);
