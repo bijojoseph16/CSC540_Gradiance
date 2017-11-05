@@ -16,7 +16,7 @@ public class Login {
      ********************************************************************/
     public static void startPage(Scanner ip) throws NoSuchElementException{
     	
-        System.out.println("\n*****Gradience*****");
+        System.out.println("\n*****Gradiance*****");
         System.out.println("1. Login as Instructor");
         System.out.println("2. Login as TA");
         System.out.println("3. Login as Student");

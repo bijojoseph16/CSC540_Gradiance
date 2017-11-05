@@ -118,7 +118,7 @@ public class Student {
 			int cntUg = resUg.getInt("ug_student");
 			int cntPg = resPg.getInt("pg_student");
 			
-			if(cntUg == 1) {
+			if(cntUg >= 1) {
 				
 				PreparedStatement psUgCourses = Connect.getConnection().prepareStatement(Queries.getUgStudentCourses);
 				psUgCourses.setInt(1, studentId);
@@ -151,7 +151,7 @@ public class Student {
 					Student.showCourse(ip, studentId);
 				}
 				
-			}else if(cntPg == 1) {
+			}else if(cntPg >= 1) {
 				
 				PreparedStatement psPgCourses = Connect.getConnection().prepareStatement(Queries.getPgStudentCourses);
 				psPgCourses.setInt(1, studentId);

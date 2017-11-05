@@ -243,16 +243,24 @@ public class Instructor {
      
          try {
            System.out.println("*****View Course*****");
+           System.out.println("Enter 0 to Go Back OR");
            System.out.println("Enter Course ID:");
+           
            // if valid show course details
            //Show Course details
            // - Start and End Date
          
            // else display error message 
            String courseID = ip.next();
+           
+           if(courseID.equals("0")) {
+        	   	Instructor.showHomePage(ip, instructorID);
+        	   	return;
+           }
          
            PreparedStatement psCourseExists = Connect.getConnection().prepareStatement(Queries.courseExists);
            psCourseExists.setString(1, courseID);
+           psCourseExists.setInt(2, instructorID);
            ResultSet rsCourseExists = psCourseExists.executeQuery();
            rsCourseExists.next();
          
@@ -303,19 +311,26 @@ public class Instructor {
                Instructor.viewOrAddCourse(ip, instructorID);
                return;
                
-             } else if(2 == choice) {
+             } else if(1 == choice) {
+            	 
+            	 	Instructor.viewOrAddExercise(ip, cID, instructorID);
+            	 	return;
+            	 
+             } if(2 == choice) {
                  Instructor.viewOrAddTA(ip, cID);
+                 return;
                  
              } else if (3 == choice) {
                  Instructor.enrollOrDropStudentFromViewCourse(ip, cID, instructorID);
                  return;
                  
              } else {
-                 System.out.println("Invalid input.");               
+                 System.out.println("Invalid input.");
+                 
              }
            }
            else {
-               System.out.println("Course does not exist.");
+               System.out.println("Course does not exist/ Not created by You");
                Connect.close(psCourseExists);
                Connect.close(rsCourseExists);
                //Instructor.viewCourse(ip, instructorID);
@@ -437,18 +452,6 @@ public class Instructor {
              Connect.close(rsGetCourseByC_ID);
              */
          }
-     }
-
-
-     /**********Functions called from view Exercise ******************************/
-     public static void showExerciseDetails(int exID) {
-         
-     }
-     public static void addQuestionToExercise(int exID) {
-         
-     }
-     public static void removeQuestionFromExercise(int exID) {
-         
      }
 
      /***********Function called from Enroll/Drop student or from ViewCourse******/
@@ -813,8 +816,46 @@ public class Instructor {
 
       /**************Functions called from viewCourse**********************************/
       
-      public static void viewOrAddExercise(Scanner ip, int c_id) {
-          
+      public static void viewOrAddExercise(Scanner ip, int c_id, int instructor_id) {
+         
+    	  try {
+              System.out.println("0:Go Back");
+              System.out.println("1.View Exercise");
+              System.out.println("2.Add Exercise");
+              System.out.print("Choice:");
+              
+              int choice = Integer.parseInt(ip.next());
+              System.out.println();
+              if(1 == choice) {
+                Instructor.viewExercise(ip, c_id, instructor_id); 
+                return;
+              }
+              else if (2 == choice) {
+               
+            	  	Instructor.addExercise(ip, c_id, instructor_id);
+                return;
+              
+              }else if(0 == choice) {
+            	  		
+            	  		Instructor.viewCourse(ip, instructor_id);
+            	  		return;
+              
+              }else {
+	            	  	
+            	  		System.out.println("Invalid Input. Enter again");
+	            	  	Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+	            	  	return;
+              }
+              
+            } catch (NumberFormatException e) {
+                System.out.println("Enter valid Input:");
+                Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+                return;
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                
+            }
       }
       
       /*
@@ -898,27 +939,424 @@ public class Instructor {
       /*
        * View Exercises in a Course
        */
-      public static void viewExercise(Scanner ip, int c_id) {
+      public static void viewExercise(Scanner ip, int c_id, int instructor_id) {
           //Display all exercises related to course
           //Ask for exercise ID
-          System.out.println("Enter Exercise ID");
-          //if valid show details of exercise 
+    		System.out.println("*************** Course Exercises ****************");
+    		PreparedStatement ps = null; PreparedStatement psExCheck = null;
+    		ResultSet results = null; ResultSet resExCheck = null;
+    		try {
+    			
+    			ps = Connect.getConnection().prepareStatement(Queries.viewExercise);
+    			ps.setInt(1,c_id);
+    			results = ps.executeQuery();
+    			Instructor.showResultsSet(ps.executeQuery());
+    			//results.next();
+    			System.out.println("Enter Exercise ID to Explore"); 
+    			System.out.println("Enter 0 to Go Back");
+    			System.out.print("Choice:");
+            int choiceEx = Integer.parseInt(ip.next());
+            
+            //go back
+            if(choiceEx == 0) {
+            		Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+            		return;
+            }
+            
+            psExCheck = Connect.getConnection().prepareStatement(Queries.doesExerciseExist);
+            psExCheck.setInt(1,choiceEx);
+            psExCheck.setInt(2,c_id);
+            Instructor.showResultsSet(psExCheck.executeQuery());
+            resExCheck = psExCheck.executeQuery();
+            resExCheck.next();
+
+  			  if(0 == resExCheck.getInt("ex_exists")) {
+  				  System.out.println("Invalid Exercise Id entered. Please re-enter");
+  				  Instructor.viewExercise(ip, c_id, instructor_id);
+  				  return;
+  				
+  			  }else {
+  			  
+  				  while(true) {
+		    	          //if valid show details of exercise 
+		    	          //else ask to renter Excercise ID
+		    	          System.out.println("1.Add Question to exercise");
+		    	          System.out.println("2.Remove Question from exercise");
+		    	          System.out.println("3.View the questions in the exercise (Existing questions in the Exercise)");
+		    	          System.out.println("0.To go back");
+		    	          System.out.print("Choice:");
+		                  int choice = Integer.parseInt(ip.next());
+		              
+		               if(3 == choice) {
+		                  Instructor.showExerciseDetails(ip, choiceEx, c_id, instructor_id);
+		                  return;
+		              }
+		              else if(1 == choice) {
+		                  Instructor.addQuestionToExercise(ip, choiceEx, c_id, instructor_id);
+		                  return;
+		              
+		              }else if(2 == choice) {
+		                  Instructor.removeQuestionFromExercise(ip, choiceEx, c_id, instructor_id);
+		                  return;
+		              }else if(0 == choice) {
+		            	  
+		            	  	 Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+		            	  	 return;
+		              
+		              }else {
+		                  System.out.println("Invalid input. Please re-enter a valid input");
+		              }  
+		               
+  				  }
+  			  }
+    			
+    		}catch(Exception e) {
+    			System.out.println(e);
+    			
+    		}finally {
+                Connect.close(ps);
+                Connect.close(psExCheck);
+                Connect.close(results);
+                Connect.close(resExCheck);
+                
+            }
           
-          //else ask to renter Ecercise ID
+      }
+      
+      /**********Functions called from view Exercise ******************************/
+      public static void showExerciseDetails(Scanner ip, int exID, int c_id, int instructor_id) {
           
-          System.out.println("1.Add Question to exercise");
-          System.out.println("2.Remove Question from exercise");
-          System.out.println("0.To go back");
+    	  			System.out.println("********************* Exercise Details ************************");
+    	  			
+    	  			PreparedStatement ps = null;
+    	  			ResultSet rs = null;
+    	  			
+    	  			try {
+    	  				
+    	  				ps = Connect.getConnection().prepareStatement(Queries.viewExerciseQuestions);
+    	  				ps.setInt(1, exID);
+    	  				rs = ps.executeQuery();
+    	  				System.out.println("**************** Details for HW " + exID + " ****************");
+    	  				while(rs.next()) {
+    	  					System.out.println("Question No: " + rs.getInt("QUESTION_ID"));
+    	  					String qtype = rs.getInt("QTYPE")==1?"Parameterized":"Fixed";
+    	  					System.out.println("Question Type: " + qtype);
+    	  					System.out.println("Question Text: \n" + rs.getString("TEXT"));
+    	  					System.out.println("Parameters: " + rs.getString("PARAMETERS"));
+    	  					System.out.print("Answer: "  + rs.getString("ANSWER"));
+    	  					System.out.print("\t Solution: "  + rs.getString("SOLUTION"));
+    	  					System.out.println("\t HINT: "  + rs.getString("HINT"));
+    	  					System.out.println();
+    	  				}
+    	  				//Instructor.showResultsSet(ps.executeQuery());
+    	  				
+    	  				System.out.println("0: Go Back");
+    	  				System.out.println("Choice: ");
+    	  				int choice = Integer.parseInt(ip.next());
+    	  				
+    	  				if(0 == choice) {
+    	  					Instructor.viewExercise(ip, c_id, instructor_id);
+    	  					return;
+    	  				}else {
+    	  					System.out.println("Invalid Input, Enter Again...");
+    	  					Instructor.showExerciseDetails(ip, exID, c_id, instructor_id);
+    	  					
+    	  				}
+
+    	  			}catch(Exception e){
+    	  				System.out.println(e);
+    	  			}finally {
+    	  				Connect.close(ps);
+    	  				Connect.close(rs);
+    	  			}
+    	  		
+    	  
+      }
+      
+      
+      public static void addQuestionToExercise(Scanner ip,int exID, int c_id, int instructor_id) {
+    	  
+    	  		//add questions to the exercise if it is a standard exercise
+			/*
+			if(mode.equals("S")) {
+				System.out.println("You have created a Standard exercise. Please Add Questions to the exerice");
+				System.out.println("Fetching all questions from the course form this course topics");
+				
+			}else {
+				
+			}
+			*/
+			
+    	  		PreparedStatement ps = null; PreparedStatement ps1 = null;PreparedStatement ps2 = null; PreparedStatement ps3 = null;
+    	  		PreparedStatement ps4 = null; PreparedStatement ps5 = null;PreparedStatement ps6 = null; PreparedStatement ps7 = null;
+    	  		ResultSet rs = null;	 ResultSet rs1 = null; ResultSet rs2 = null;	 ResultSet rs3 = null;
+    	  		ResultSet rs4 = null;	 ResultSet rs5 = null; ResultSet rs6 = null;	 ResultSet rs7 = null;
+    	  		
+    	  		try {
+    	  			
+    	  			ps = Connect.getConnection().prepareStatement(Queries.doesExerciseExist);
+    	  			ps.setInt(1, exID);
+    	  			ps.setInt(2, c_id);
+    	  			rs = ps.executeQuery();
+    	            rs.next();
+
+    	  			  if(0 == rs.getInt("ex_exists")) {
+    	  				  System.out.println("Invalid Exercise Id entered. Please re-enter");
+    	  				  Instructor.viewExercise(ip, c_id, instructor_id);
+    	  				  return;
+    	  				
+    	  			  }else {
+    	  				  ps1 = Connect.getConnection().prepareStatement(Queries.viewExerciseDetails);
+    	  				  ps1.setInt(1, exID);
+    	  				  rs1 = ps1.executeQuery();
+    	  				  rs1.next();
+    	  				  
+    	  				  if(rs1.getString("EX_MODE").equals("S")) {
+    	  					  System.out.println("The selected exercise is a standard exercise");
+    	  					  System.out.println("Maximum Allowed Question in this exercise are " + rs1.getInt("NUM_QUESTIONS"));
+    	  					  
+    	  					  System.out.print("This exercise has ");
+    	  					  ps2 = Connect.getConnection().prepareStatement(Queries.getCountExQues);
+    	  					  ps2.setInt(1, rs1.getInt("EX_ID"));
+    	  					  rs2 = ps2.executeQuery(); rs2.next();
+    	  					  System.out.print(rs2.getInt("exQuesCnt")); System.out.println(" Questions currently.");
+    	  					  System.out.println("No. of questions that can be further added = " + Integer.toString(rs1.getInt("NUM_QUESTIONS")-rs2.getInt("exQuesCnt")));
+    	  					  
+    	  					  ps3 = Connect.getConnection().prepareStatement(Queries.getExMappedQues);
+    	  					  ps3.setInt(1, exID);
+    	  					  rs3 = ps3.executeQuery(); //rs3.next();
+    	  					  
+    	  					  ps5 = Connect.getConnection().prepareStatement(Queries.getUnmappedQuesCnt);
+    	  					  ps5.setInt(1, exID);
+  	  					  ps5.setInt(2, exID);
+  	  					  rs5 = ps5.executeQuery(); rs5.next();
+  	  					  
+    	  					  
+    	  					  ps4 = Connect.getConnection().prepareStatement(Queries.getExUnmappedQues);
+    	  					  ps4.setInt(1, exID);
+    	  					  ps4.setInt(2, exID);
+    	  					  rs4 = ps4.executeQuery(); //rs4.next();
+    	  					  
+    	  					  if(rs2.getInt("exQuesCnt") > 0) {
+    	  					  
+    	  						  System.out.println("View current questions(y/n)");
+    	  						  String c = ip.next();
+    	  						  if(c.equalsIgnoreCase("y")) {
+    	  							  Instructor.showResultsSet(rs3);
+    	  						  }else {
+    	  							  //do nothing
+    	  						  }
+    	  						  
+    	  					  }
+    	  					  
+    	  					List<Integer> list = null;
+    	  					  if(rs5.getInt("leftQues") > 0) {
+    	  						  System.out.println("Question Ids that can be added are");
+    	  						   list = new ArrayList<Integer>();
+    	  						  
+    	  						  while(rs4.next()) {
+    	  							  System.out.println(rs4.getInt("question_id"));
+    	  							  list.add(rs4.getInt("question_id"));
+    	  						  }
+    	  						  
+    	  						  System.out.println("View potential Questions Text (y/n)");
+  	  						  String c = ip.next();
+  	  						  if(c.equalsIgnoreCase("y")) {
+  	  							  Instructor.showResultsSet(ps4.executeQuery());
+  	  						  }else {
+  	  							  //do nothing
+  	  						  }
+    	  					  }
+    	  					  
+    	  					  System.out.println("Adding Questions now");
+    	  					  
+    	  					  int curCnt = rs1.getInt("NUM_QUESTIONS")-rs2.getInt("exQuesCnt");
+    	  					  
+    	  					  while(curCnt > 0) {
+    	  						  
+    	  						  System.out.println("Enter 0 to Go Back Or 1 to continue");
+    	  						  System.out.println("Choice: ");
+    	  						  int choice = ip.nextInt();
+    	  						  
+    	  						  if(choice == 0) {
+    	  							  System.out.println("Going Back");
+    	  							  Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+    	  							  return;
+    	  						  }else {
+    	  							  
+    	  							  System.out.println("Enter a question Id from " + list.toString());
+    	  							  
+    	  							  int choiceQ = ip.nextInt();
+    	  							  if(list.contains(choiceQ)) {
+    	  								  
+    	  								  ps6 = Connect.getConnection().prepareStatement(Queries.insertExQuestion);
+    	  								  ps6.setInt(1, exID);
+    	  								  ps6.setInt(2, choiceQ);
+    	  								  ps6.executeQuery();
+    	  								  list.remove(list.indexOf(choiceQ));
+    	  							  }else {
+    	  								  System.out.println("The entered question is not available. Try again");
+    	  								  continue;
+    	  							  }
+    	  							  
+    	  						  }
+    	  						  
+    	  						  curCnt--;
+    	  						  
+    	  					  }
+    	  					  
+    	  					  System.out.println("Maximum possible no. of questions have been added to the Exercise");
+    	  					  Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+    	  					  
+    	  				  }else {
+    	  					  
+    	  					  System.out.println("The exercise is an adaptive one !!! ");
+    	  					  System.out.println("No need to add any question. Questions will be randomly selected from relevant topics ");
+    	  					  Instructor.viewOrAddExercise(ip, c_id, instructor_id);
+    	  					  return;
+    	  					  
+    	  				  }
+    	  			  }
+
+    	  			
+    	  		}catch(Exception e){
+    	  			e.printStackTrace();
+    	  		}finally {
+    	  			Connect.close(ps);
+    	  			Connect.close(ps1);
+    	  			Connect.close(ps2);
+    	  			Connect.close(ps3);
+    	  			Connect.close(ps4);
+    	  			Connect.close(ps5);
+    	  			Connect.close(ps6);
+    	  			Connect.close(rs);
+    	  			Connect.close(rs1);
+    	  			Connect.close(rs2);
+    	  			Connect.close(rs3);
+    	  			Connect.close(rs4);
+    	  			Connect.close(rs5);
+    	  			Connect.close(rs6);
+    	  		}
+          
+      }
+      
+      
+      public static void removeQuestionFromExercise(Scanner ip,int exID, int c_id, int instructor_id) {
+          
       }
 
       /*
        * Add Exercise to a Course
        */
-      public static void addExercise(Scanner ip, int c_id) {
+      public static void addExercise(Scanner ip, int c_id, int instructor_id) {
           //Select 0 to go back
           //Ask for exercise type
           //Ask number of questions in execise
           //
+    	      //Show firstName, LastName and Id
+  		
+  		System.out.println("*************** Adding Homework ****************");
+  		PreparedStatement ps = null; PreparedStatement ps1 = null; PreparedStatement ps2 = null; PreparedStatement ps3 = null;
+  		PreparedStatement ps4 = null; PreparedStatement ps5 = null; PreparedStatement ps6 = null; PreparedStatement ps7 = null;
+  		ResultSet rs = null; ResultSet rs1 = null; ResultSet rs2 = null;
+  		
+  		try {
+  			ps = Connect.getConnection().prepareStatement(Queries.countOfExercises);
+  			rs = ps.executeQuery(); rs.next();
+  			int lastExId = rs.getInt("maxExNum");
+  			int newExId = lastExId + 1;
+  			System.out.println("Generated Exercise ID is " + newExId);
+  			System.out.println("Fill up the other enteries as shown in the example for each input asked");
+  			
+  			System.out.println("Enter the name of HW (HW" + newExId + " is preferred)");
+  			String hwName = ip.next();
+  			System.out.println("Enter the number of questions in the Exercise");
+  			int numQues = ip.nextInt();
+  			System.out.println("Enter Points for Correct Answer (a positive number eg. 3)");
+  			int ptCorr = ip.nextInt();
+  			System.out.println("Enter Points for Incorrect Answer (a negative number eg. -1)");
+  			int ptIncorr = ip.nextInt();
+  			System.out.println("Enter the scoring Policy (eg. Latest_Attempt, Average_Attempt, Maximum_Score)");
+  			String policy = ip.next();
+  			System.out.println("Enter the no. of retries (eg. 3)");
+  			int retries = ip.nextInt();
+  			System.out.println("Enter Mode(Adaptive or Standard) of the Exercise (eg. A or S)");
+  			String mode = ip.next();
+  			
+  			System.out.println("We are adding this exercise to the Database... Please wait");
+  			
+  			//insert statement to add exercise
+  			ps1 = Connect.getConnection().prepareStatement(Queries.insertEx);
+  			ps1.setInt(1, newExId);
+  			ps1.setString(2, hwName);
+  			ps1.setInt(3, numQues);
+  			ps1.setInt(4, ptIncorr);
+  			ps1.setInt(5, ptCorr);
+  			ps1.setString(6, policy);
+  			ps1.setInt(7, retries);
+  			ps1.setString(8, mode);
+  			ps1.executeQuery();
+  			
+  			System.out.println("Exercise Added");
+  			
+  			System.out.println("Define a duration for the Exercise");
+  			System.out.println("The format followed for timestamp is 'YYYY-MM-DD HH24:MI:SS.FF'. Input accordingly");
+  			System.out.println("Enter Start TimeStamp for this exercise (eg. 2017-10-16 00:00:00.000)");
+  			System.out.println("Enter Start Date (eg. 2017-10-16)");
+  			String stDate = ip.next();
+  			System.out.println("Enter Start Time (eg. 00:00:00.000)");
+  			String stTime = ip.next();
+  			String stDateTs = stDate + " " + stTime;
+  			
+  			System.out.println("Enter End TimeStamp for this exercise (eg. 2017-10-16 00:00:00.000)");
+  			System.out.println("Enter End Date (eg. 2017-10-16)");
+  			String endDate = ip.next();
+  			System.out.println("Enter End Time (eg. 00:00:00.000)");
+  			String endTime = ip.next();
+  			String endDateTs = endDate + " " + endTime;
+  			
+  			//insert statement to add exercise duration if it does not exist
+  			ps5 = Connect.getConnection().prepareStatement(Queries.checkDurationExist);
+  			ps5.setTimestamp(1, java.sql.Timestamp.valueOf(stDateTs));
+  			ps5.setTimestamp(2, java.sql.Timestamp.valueOf(endDateTs));
+  			rs1 = ps5.executeQuery(); rs1.next();
+  			
+  			if(rs1.getInt("dateExists")  == 0) {
+	  		
+  				ps4 = Connect.getConnection().prepareStatement(Queries.insertDuration);
+	  			ps4.setTimestamp(1, java.sql.Timestamp.valueOf(stDateTs));
+	  			ps4.setTimestamp(2, java.sql.Timestamp.valueOf(endDateTs));
+	  			ps4.executeQuery();
+	  			
+  			}
+  			
+  			ps2 = Connect.getConnection().prepareStatement(Queries.insertExDuration);
+  			ps2.setInt(1, newExId);
+  			ps2.setTimestamp(2, java.sql.Timestamp.valueOf(stDateTs));
+  			ps2.setTimestamp(3, java.sql.Timestamp.valueOf(endDateTs));
+  			ps2.executeQuery();
+  			
+  			//insert statement to define exercise course relationship
+  			ps3 = Connect.getConnection().prepareStatement(Queries.insertExCourseRelation);
+  			ps3.setInt(1, c_id);
+  			ps3.setInt(2, newExId);
+  			ps3.executeQuery();
+  			
+  			System.out.println("Exercise Updated in the database... Returning");
+  			Instructor.viewExercise(ip, c_id, instructor_id);
+  			
+  		}catch(Exception e) {
+  			e.printStackTrace();
+  			
+  		}finally {
+  			Connect.close(ps1); Connect.close(rs);
+  			Connect.close(ps2);
+  			Connect.close(ps3);
+  			Connect.close(ps4);
+  			Connect.close(ps5);
+  			Connect.close(rs1);
+  		}
+    	  
       }
       
       /*
@@ -1032,30 +1470,38 @@ public class Instructor {
           }          
       }
       
+
+      /********************************************************
+       * Function: showResultsSet
+       * Arguments: ResultSet 
+       * Returns: void
+       * Description: To display the records in the resultset
+       *******************************************************/
       public static void showResultsSet(ResultSet rs) {
-	    	ResultSetMetaData rsmd;
-			try {
-				int numRows = 0;
-				rsmd = rs.getMetaData();
-				int columnsNumber = rsmd.getColumnCount();
-				while (rs.next()) {
-					numRows += 1;
-					for (int i = 1; i <= columnsNumber; i++) {
-						if (i > 1) System.out.print(",  ");
-						String columnValue = rs.getString(i);
-						System.out.print(rsmd.getColumnName(i) + ": " + columnValue);
-					}
-					System.out.println("");
-		    	   }
-				
-				if(0 == numRows) {
-					System.out.println("No Records found !!!");
-				}
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    }
+      	ResultSetMetaData rsmd;
+  		try {
+  			int numRows = 0;
+  			rsmd = rs.getMetaData();
+  			int columnsNumber = rsmd.getColumnCount();
+  			while (rs.next()) {
+  				numRows += 1;
+  				for (int i = 1; i <= columnsNumber; i++) {
+  					if (i > 1) System.out.print(",  ");
+  					String columnValue = rs.getString(i);
+  					System.out.print(rsmd.getColumnName(i) + ": " + columnValue);
+  				}
+  				System.out.println("");
+  	    	   }
+  			
+  			if(0 == numRows) {
+  				System.out.println("No Records found !!!");
+  			}
+  			
+  		} catch (SQLException e) {
+  			// TODO Auto-generated catch block
+  			e.printStackTrace();
+  		}
+      }
+
    
 }
