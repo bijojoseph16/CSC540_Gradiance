@@ -17,7 +17,7 @@ public class Instructor {
        -[Pending] View Exercise
        -[Pending] Add Exercise
        -[Done] View TA
-       -[Pending] Add TA
+       -[Done] Add TA
        -[Done] Enroll Student
        -[Done] Drop Student
        -[Done] Go Back
@@ -169,33 +169,46 @@ public class Instructor {
      public static void enrollOrDropStudentFromInstructorLogin(Scanner ip, int instructorID) {
          PreparedStatement ps = null;
          ResultSet rs = null;
+         PreparedStatement psCourseExists = null;
+         ResultSet rsCourseExists = null;
          try {
              int cID;
              int callerFlag = 1;
              System.out.print("Enter Course ID:");
              String courseID = ip.next();
-             System.out.println("1. Enroll a Student in course");
-             System.out.println("2. Drop a Student from course");
-             System.out.print("Choice:");
-             //Get the unique c_id to delete student from appropriate course
-             ps = Connect.getConnection().prepareStatement(Queries.getCourseByCourseID);
-             ps.setString(1, courseID);
-             rs = ps.executeQuery();
-             rs.next();             
-             cID = rs.getInt("c_ID");
+
+             psCourseExists = Connect.getConnection().prepareStatement(Queries.instructorCanViewCourse);
+             psCourseExists.setInt(1, instructorID);
+             psCourseExists.setString(2, courseID);
+             rsCourseExists = psCourseExists.executeQuery();
+             rsCourseExists.next();
              
-             int choice = Integer.parseInt(ip.next());
+             if(1 == rsCourseExists.getInt("course_exists")) {
+               System.out.println("1. Enroll a Student in course");
+               System.out.println("2. Drop a Student from course");
+               System.out.print("Choice:");
+               //Get the unique c_id to delete student from appropriate course
+               ps = Connect.getConnection().prepareStatement(Queries.getCourseByCourseID);
+               ps.setString(1, courseID);
+               rs = ps.executeQuery();
+               rs.next();             
+               cID = rs.getInt("c_ID");
              
-             if(1 == choice) {
+               int choice = Integer.parseInt(ip.next());
+             
+               if(1 == choice) {
                  Instructor.enrollStudent(ip, cID, instructorID, callerFlag);
                  return;
-             }
-             else if(2 == choice) {
+               }
+               else if(2 == choice) {
                  Instructor.dropStudent(ip, cID, instructorID, callerFlag);
                  return;
-             }
-             else {
+               }
+               else {
                  System.out.println("Invalid input");     
+               }
+             } else {
+                 System.out.println("No permission to view this course");
              }
                    
          } catch(NumberFormatException e) {
@@ -207,6 +220,8 @@ public class Instructor {
          } finally {
              Connect.close(ps);
              Connect.close(rs);
+             Connect.close(psCourseExists);
+             Connect.close(rsCourseExists);
          }
          
          Instructor.showHomePage(ip, instructorID);
@@ -214,22 +229,35 @@ public class Instructor {
      }
 
      public static void searchOrAddQuestionInQB(Scanner ip,int instructorID) {
-         System.out.println("Press 1 to Search question in question bank");
-         System.out.println("Press 2 to Add question to question bank");
-         System.out.println("Press 0 to go back");
          
-         int arg=ip.nextInt();
+         try {
+           System.out.println("Press 1 to Search question in question bank");
+           System.out.println("Press 2 to Add question to question bank");
+           System.out.println("Press 0 to go back");
          
-         if(arg==1) {
+           int arg = Integer.parseInt(ip.next());
+         
+           if(arg ==1) {
         	 searchQuestionInQB(ip,instructorID);
-         }
+        	 return;
+           }
          
-         else if(arg==2) {
+           else if(arg==2) {
         	 addQuestionInQB(ip,instructorID);
-         }
+        	 return;
+           }
          
-         else if(arg==0) {
+           else if(arg==0) {
         	 Instructor.showHomePage(ip, instructorID);
+        	 return;
+           }
+         } catch (NumberFormatException e) {
+             System.out.println("Invalid Input");
+             Instructor.searchOrAddQuestionInQB(ip, instructorID);
+             return;
+             
+         } catch (Exception e) {
+             e.printStackTrace();
          }
      }
 
@@ -251,8 +279,9 @@ public class Instructor {
            // else display error message 
            String courseID = ip.next();
          
-           PreparedStatement psCourseExists = Connect.getConnection().prepareStatement(Queries.courseExists);
-           psCourseExists.setString(1, courseID);
+           PreparedStatement psCourseExists = Connect.getConnection().prepareStatement(Queries.instructorCanViewCourse);
+           psCourseExists.setInt(1, instructorID);
+           psCourseExists.setString(2, courseID);
            ResultSet rsCourseExists = psCourseExists.executeQuery();
            rsCourseExists.next();
          
@@ -264,6 +293,7 @@ public class Instructor {
            if(1 == rsCourseExists.getInt("course_exists")) {
          
              PreparedStatement ps = Connect.getConnection().prepareStatement(Queries.getCourseByCourseID);
+             
              ps.setString(1, courseID);
              ResultSet results = ps.executeQuery();
              results.next();
@@ -315,7 +345,7 @@ public class Instructor {
              }
            }
            else {
-               System.out.println("Course does not exist.");
+               System.out.println("No permisssion to view this course.");
                Connect.close(psCourseExists);
                Connect.close(rsCourseExists);
                //Instructor.viewCourse(ip, instructorID);
@@ -701,24 +731,26 @@ public class Instructor {
        * Instructor can search a question 
        */
       public static void searchQuestionInQB(Scanner ip,int instructorID) {
-    	  ip.nextLine();
-          System.out.println("1. Search by question id ");
-          System.out.println("2. Search by topic name");
-          System.out.println("0. Go Back");
+    	  
+          try {
+            ip.nextLine();
+            System.out.println("1. Search by question id ");
+            System.out.println("2. Search by topic name");
+            System.out.println("0. Go Back");
           
-          int arg=ip.nextInt();
+            int arg = Integer.parseInt(ip.next());
           
-          if(arg==1) {
+            if(arg==1) {
         	  System.out.println("Enter question id");
         	   
-        	  int qid=ip.nextInt();
+        	  int qid = Integer.parseInt(ip.next());
         	  
         	  try {
-    	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.searchQuestion);
+    	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.searchQuestionByQId);
     	          pstmt.setInt(1, qid);
-    	          ResultSet rs=pstmt.executeQuery();
-    	          
+    	          ResultSet rs=pstmt.executeQuery();  	          
     	          showResultsSet(rs);
+    	          
     		 }
     		 catch(SQLException e) {
     	          	e.printStackTrace();
@@ -758,6 +790,15 @@ public class Instructor {
           
           else if(arg==0) {
         	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+        	  return;
+          }
+          } catch (NumberFormatException e) {
+              System.out.println("Invalid Input");
+              Instructor.searchQuestionInQB(ip, instructorID);
+              return;
+              
+          } catch (Exception e) {
+              e.printStackTrace();
           }
       }
        
@@ -765,50 +806,184 @@ public class Instructor {
        * Instructor can add a question 
        */
       public static void addQuestionInQB(Scanner ip,int instructorID) {
-    	  ip.nextLine();
-          System.out.println("1. Enter question id");
-          int qid=ip.nextInt();
-          System.out.println("2. Enter question text");
-          String qtext=ip.nextLine();
-          System.out.println("3. Enter solution of the question");
-          String qsoln=ip.nextLine();
-          System.out.println("4. Enter difficulty level of the question");
-          int qdif=ip.nextInt();
-          System.out.println("5. Enter hint");
-          String hint=ip.nextLine();
-          System.out.println("6. Enter question type(0 for fixed and 1 for parametrized");
-          int qtype=ip.nextInt();
-          System.out.println("7. Enter topic name");
-          String topic=ip.nextLine();
           
           try {
-	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.addQuestion);
-	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
-	          
-	          pstmt.setInt(1, qid);
-	          pstmt.setString(2, qtext);
-	          pstmt.setString(3, qsoln);
-	          pstmt.setInt(4, qdif);
-	          pstmt.setString(5, hint);
-	          pstmt.setInt(6, qtype);
-	          pstmt2.setString(1,topic);
-	          pstmt2.setInt(2,qid);
-	          ResultSet rs=pstmt.executeQuery();
-	          ResultSet rs2=pstmt2.executeQuery();
-	          
-	          System.out.println("Question has been added to question bank!");
-		 }
-		 catch(SQLException e) {
-	          	e.printStackTrace();
-	          }
+    	    ip.nextLine();
+    	    int paramID;
+    	    String parameters = "";
+    	    String qsoln = "";
+    	    String hint = "";
+    	    String qans = "";
+    	   
+    	    PreparedStatement psAddQuestionToQB = null;
+    	    PreparedStatement psAddQuestionToQuestionHasTopic = null;
+    	    PreparedStatement psAddQuestionToParameter = null;
+    	  
+            System.out.println("1. Enter question id");
+            int qid=Integer.parseInt(ip.nextLine());
           
-          System.out.println("Press 0 to go back");
-          int arg=ip.nextInt();
+            System.out.println("2. Enter question type(0 for fixed and 1 for parametrized");
+            int qtype = Integer.parseInt(ip.nextLine());
           
-          if(arg==0) {
-        	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+            System.out.println("3. Enter question text");
+            String qtext = ip.nextLine();
+          
+            System.out.println("4. Enter topic the question falls under");
+            String topic = ip.nextLine();
+
+            System.out.println("5. Enter difficulty level of the question(Scale 1 - 6)");
+            int qdif = Integer.parseInt(ip.nextLine());
+
+            if(qtype == 0) {
+              System.out.println("6. Enter solution of the question");
+              qsoln = ip.nextLine();
+              System.out.println("7. Enter hint");
+              hint = ip.nextLine();
+              System.out.println("8. Enter answer");
+              qans = ip.nextLine();
+              paramID = 0;
+              parameters = "NA";
+              try {
+                  psAddQuestionToQB = Connect.getConnection().prepareStatement(Queries.addQuestion);
+                  psAddQuestionToQuestionHasTopic = Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
+                  
+                  psAddQuestionToQB.setInt(1, qid);
+                  psAddQuestionToQB.setString(2, qtext);
+                  psAddQuestionToQB.setString(3, qsoln);
+                  psAddQuestionToQB.setInt(4, qdif);
+                  psAddQuestionToQB.setString(5, hint);
+                  psAddQuestionToQB.setInt(6, qtype);
+                  
+                  psAddQuestionToQuestionHasTopic.setString(1,topic);
+                  psAddQuestionToQuestionHasTopic.setInt(2,qid);
+                  
+                  psAddQuestionToParameter = Connect.getConnection().prepareStatement(Queries.addQuestionToParameter);
+                  psAddQuestionToParameter.setInt(1, qid);
+                  psAddQuestionToParameter.setInt(2, paramID);
+                  psAddQuestionToParameter.setString(3, parameters);
+                  psAddQuestionToParameter.setString(4, qans);
+                  
+                  psAddQuestionToQB.executeQuery();
+                  psAddQuestionToQuestionHasTopic.executeQuery();
+                  psAddQuestionToParameter.executeQuery();
+                  
+                  System.out.println("Question has been added to question bank!");
+               }
+               catch(SQLException e) {
+                    System.out.println("Could not add question to QB");
+                    e.printStackTrace();
+               } finally {
+                   Connect.close(psAddQuestionToQB);
+                   Connect.close(psAddQuestionToQuestionHasTopic);
+                   Connect.close(psAddQuestionToParameter);
+               }
+             
+             int arg;
+             do {
+               System.out.println("Press 0 to go back");
+               arg = Integer.parseInt(ip.nextLine());
+              
+               if(arg==0) {
+                 Instructor.searchOrAddQuestionInQB(ip, instructorID);
+                 return;
+               }
+             } while(arg != 0);
+                           
+            }
+            
+            else if(qtype == 1) {
+                System.out.println("You selected parametrized question.Please enter parameters");
+                System.out.println("Enter Number of combination of parameters for the question: ");
+                paramID = 1;
+                int paramIDIndex = Integer.parseInt(ip.nextLine());
+                
+                try {
+                  psAddQuestionToQB = Connect.getConnection().prepareStatement(Queries.addQuestion);
+                  System.out.println("6. Enter solution of the question");
+                  qsoln = ip.nextLine();
+                  System.out.println("7. Enter hint");
+                  hint = ip.nextLine();
+                  
+                  psAddQuestionToQB.setInt(1, qid);
+                  psAddQuestionToQB.setString(2, qtext);
+                  psAddQuestionToQB.setString(3, qsoln);
+                  psAddQuestionToQB.setInt(4, qdif);
+                  psAddQuestionToQB.setString(5, hint);
+                  psAddQuestionToQB.setInt(6, qtype);
+
+                  psAddQuestionToQB.executeQuery();
+
+                } catch(Exception e) {
+                    System.out.println("Could not add question to QB");
+                    e.printStackTrace();
+                } finally {
+                    Connect.close(psAddQuestionToQB);
+                }
+                
+                try {
+                  psAddQuestionToQuestionHasTopic = Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
+                  
+                  psAddQuestionToQuestionHasTopic.setString(1,topic);
+                  psAddQuestionToQuestionHasTopic.setInt(2,qid);
+
+                  psAddQuestionToQuestionHasTopic.executeQuery();
+                } catch(Exception e) {
+                    System.out.println("Could not add question to Topic has question");
+                    e.printStackTrace();
+                } finally {
+                    Connect.close(psAddQuestionToQuestionHasTopic);
+                }
+                
+                
+                for(int i = 0; i < paramIDIndex; i++) {
+                    try {
+                        System.out.println("Enter parameter combination");
+                        parameters = ip.nextLine();
+                        System.out.println("Enter answer");
+                        qans = ip.nextLine();
+                        try {
+                            
+                            psAddQuestionToParameter = Connect.getConnection().prepareStatement(Queries.addQuestionToParameter);
+                            psAddQuestionToParameter.setInt(1, qid);
+                            psAddQuestionToParameter.setInt(2, paramID);
+                            psAddQuestionToParameter.setString(3, parameters);
+                            psAddQuestionToParameter.setString(4, qans);
+                            
+                            psAddQuestionToParameter.executeQuery();
+                            
+                            System.out.println("Question parameters set have been added.");
+                            paramID++;
+                         }
+                         catch(SQLException e) {
+                              System.out.println("Could not add question to QB");
+                              e.printStackTrace();
+                         } finally {
+                             Connect.close(psAddQuestionToParameter);
+                        }
+                        
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                int arg;
+                do {
+                  System.out.println("Press 0 to go back");
+                  arg = Integer.parseInt(ip.nextLine());
+                 
+                  if(arg==0) {
+                    Instructor.searchOrAddQuestionInQB(ip, instructorID);
+                    return;
+                  }
+                } while(arg != 0);
+            }
+          } catch (Exception e) {
+              System.out.println("Invalid Input");
+              e.printStackTrace();
+              Instructor.addQuestionInQB(ip, instructorID);
+              return;
           }
-         
+          
       }
 
       /**************Functions called from viewCourse**********************************/
