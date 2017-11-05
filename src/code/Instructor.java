@@ -60,7 +60,7 @@ public class Instructor {
                  Instructor.enrollOrDropStudentFromInstructorLogin(ip, instructorID);
                  
              } else if(4 == choice) {
-                 Instructor.searchOrAddQuestionInQB(ip);
+                 Instructor.searchOrAddQuestionInQB(ip,instructorID);
                  
              }else if(5 == choice) {
                  Login.startPage(ip);
@@ -213,8 +213,24 @@ public class Instructor {
          return;
      }
 
-     public static void searchOrAddQuestionInQB(Scanner ip) {
+     public static void searchOrAddQuestionInQB(Scanner ip,int instructorID) {
+         System.out.println("Press 1 to Search question in question bank");
+         System.out.println("Press 2 to Add question to question bank");
+         System.out.println("Press 0 to go back");
          
+         int arg=ip.nextInt();
+         
+         if(arg==1) {
+        	 searchQuestionInQB(ip,instructorID);
+         }
+         
+         else if(arg==2) {
+        	 addQuestionInQB(ip,instructorID);
+         }
+         
+         else if(arg==0) {
+        	 Instructor.showHomePage(ip, instructorID);
+         }
      }
 
      /************Functions called from viewOrAddCourse****************************/
@@ -687,15 +703,115 @@ public class Instructor {
       /*
        * Instructor can search a question 
        */
-      public static void searchQuestionInQB(Scanner ip, int qID) {
+      public static void searchQuestionInQB(Scanner ip,int instructorID) {
+    	  ip.nextLine();
+          System.out.println("1. Search by question id ");
+          System.out.println("2. Search by topic name");
+          System.out.println("0. Go Back");
           
+          int arg=ip.nextInt();
+          
+          if(arg==1) {
+        	  System.out.println("Enter question id");
+        	   
+        	  int qid=ip.nextInt();
+        	  
+        	  try {
+    	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.searchQuestion);
+    	          pstmt.setInt(1, qid);
+    	          ResultSet rs=pstmt.executeQuery();
+    	          
+    	          showResultsSet(rs);
+    		 }
+    		 catch(SQLException e) {
+    	          	e.printStackTrace();
+    	          }
+        	  
+        	  System.out.println("Press 0 to go back");
+        	  int arg2=ip.nextInt();
+              
+              if(arg2==0) {
+            	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+              }
+          }
+          
+          else if(arg==2) {
+        	  ip.nextLine();
+        	  System.out.println("Enter topic name");
+        	  String topic=ip.nextLine();
+        	  
+        	  try {
+    	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(Queries.searchQuestionbyTopic);
+    	          pstmt2.setString(1,topic);
+    	          ResultSet rs=pstmt2.executeQuery();
+    	          
+    	          showResultsSet(rs);
+    		 }
+    		 catch(SQLException e) {
+    	          	e.printStackTrace();
+    	          }
+        	  System.out.println("Press 0 to go back");
+        	  int arg3=ip.nextInt();
+              
+              if(arg3==0) {
+            	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+              }
+        	  
+          }
+          
+          else if(arg==0) {
+        	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+          }
       }
        
       /*
        * Instructor can add a question 
        */
-      public static void addQuestionInQB(Scanner ip) {
+      public static void addQuestionInQB(Scanner ip,int instructorID) {
+    	  ip.nextLine();
+          System.out.println("1. Enter question id");
+          int qid=ip.nextInt();
+          System.out.println("2. Enter question text");
+          String qtext=ip.nextLine();
+          System.out.println("3. Enter solution of the question");
+          String qsoln=ip.nextLine();
+          System.out.println("4. Enter difficulty level of the question");
+          int qdif=ip.nextInt();
+          System.out.println("5. Enter hint");
+          String hint=ip.nextLine();
+          System.out.println("6. Enter question type(0 for fixed and 1 for parametrized");
+          int qtype=ip.nextInt();
+          System.out.println("7. Enter topic name");
+          String topic=ip.nextLine();
           
+          try {
+	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(Queries.addQuestion);
+	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(Queries.addQuestiontoTopic);
+	          
+	          pstmt.setInt(1, qid);
+	          pstmt.setString(2, qtext);
+	          pstmt.setString(3, qsoln);
+	          pstmt.setInt(4, qdif);
+	          pstmt.setString(5, hint);
+	          pstmt.setInt(6, qtype);
+	          pstmt2.setString(1,topic);
+	          pstmt2.setInt(2,qid);
+	          ResultSet rs=pstmt.executeQuery();
+	          ResultSet rs2=pstmt2.executeQuery();
+	          
+	          System.out.println("Question has been added to question bank!");
+		 }
+		 catch(SQLException e) {
+	          	e.printStackTrace();
+	          }
+          
+          System.out.println("Press 0 to go back");
+          int arg=ip.nextInt();
+          
+          if(arg==0) {
+        	  Instructor.searchOrAddQuestionInQB(ip, instructorID);
+          }
+         
       }
 
       /**************Functions called from viewCourse**********************************/
@@ -1291,11 +1407,70 @@ public class Instructor {
       }
       
       //Check should be put on PG_ENROLLED table so that a student 
-      //cannot ne both TA and enrolled for the course
+      //cannot be both TA and enrolled for the course
       public static void addTA(Scanner ip, int c_id) {
-          
+          PreparedStatement psIsPG = null;
+          PreparedStatement psAddTA = null;
+          ResultSet rsIsPG = null;
+          try {
+            System.out.print("Enter Student ID:");
+            int studentID = Integer.parseInt(ip.next());
+            System.out.print("Enter Student's first name:");
+            String studentFirstName = ip.next();
+            System.out.print("Enter Student's last name:");
+            String studentLastName = ip.next();
+            
+            psIsPG = Connect.getConnection().prepareStatement(Queries.checkIfPgStudent);
+            psIsPG.setInt(1, studentID);
+            
+            rsIsPG = psIsPG.executeQuery();
+            rsIsPG.next();
+
+            if(1 == rsIsPG.getInt("pg_student")) {
+                try {
+                  psAddTA = Connect.getConnection().prepareStatement(Queries.addTA);
+                  psAddTA.setInt(1, studentID);
+                  psAddTA.setInt(2, c_id);
+                  psAddTA.executeQuery();
+                  System.out.println("Successfully Added TA");
+                  //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                  
+                } catch (SQLException e) {
+                    if(e.getSQLState().startsWith("23")) {
+                        System.out.println("Could not add TA,  he is already TA for a course\n");
+                    }
+                    
+                    //Need to catch this PL-SQL exception
+                    else {
+                      System.out.println("Could not add TA as he is enrolled in the course ");
+                      //Instructor.enrollOrDropStudent(ip);
+                      e.printStackTrace();
+                    }
+                    
+                } catch(Exception e){
+                    System.out.println("Could not enroll PG Student");
+                    e.printStackTrace();
+                }
+                  
+                  finally {
+                    Connect.close(psIsPG);
+                    Connect.close(rsIsPG);
+                    Connect.close(psAddTA);
+                    
+                }
+            }
+            else {
+                System.out.println("Could not execute query as student does not exist or is a UG student");
+                //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+            }
+            Instructor.viewOrAddTA(ip, c_id);
+            
+          } catch (Exception e) {
+              e.printStackTrace();
+          }          
       }
       
+
       /********************************************************
        * Function: showResultsSet
        * Arguments: ResultSet 
@@ -1327,5 +1502,6 @@ public class Instructor {
   			e.printStackTrace();
   		}
       }
+
    
 }
