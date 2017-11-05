@@ -292,6 +292,7 @@ public class Queries{
     static final String insertExQuestionRelation = "insert into exercise_has_question values (?,?)";
     
     static final String insertExQuestion = "insert into exercise_has_question values (?,?)";
+    static final String deleteExQuestion = "delete from exercise_has_question where ex_id = ? and question_id = ?";
     
     static final String getCountExQues = "select count(*) as \"exQuesCnt\" from exercise_has_question where ex_id = ?";
     static final String getExMappedQues = "select q1.question_id, q1.text from question q1, exercise_has_question eq where eq.ex_id = ? and q1.question_id = eq.question_id";
