@@ -108,7 +108,7 @@ public class Queries{
 	//Query to get course information given course ID
 	static final String getCourseByCourseID = "Select * from course where course_id = ?";
     static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
-    static final String courseExists = "Select count(*) as \"course_exists\" from course where course_id = ?";
+    static final String courseExists = "Select count(*) as \"course_exists\" from course c, professor_creates_course p where c.c_id = p.course_id  and c.course_id = ? and p.professor_id=?";
     
     //Query to add course
     static final String addCourse = "Insert into course (course_id, course_name,course_level,max_students) values (?,?,?,?)";
@@ -168,7 +168,7 @@ public class Queries{
 					showResultsSet(rs); 
 	 
 	 * */
-
+    
     static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
             + " values(?,?,?)";
     
@@ -262,4 +262,33 @@ public class Queries{
             "       into :new.c_id " + 
             "       from dual; " + 
             "   end; ";
+    
+    static final String viewExercise = "select * from exercise e, exercise_has_duration ehd, course_has_exercise ce "
+    									+ "where e.ex_id = ce.exercise_id and ehd.ex_id = e.ex_id and ce.course_id = ?";
+    static final String doesExerciseExist = "Select count(*) as \"ex_exists\" from exercise e, exercise_has_duration ehd, course_has_exercise ce "
+    											+ "where e.ex_id = ? and e.ex_id = ce.exercise_id and ehd.ex_id = e.ex_id and ce.course_id = ?";
+    static final String viewExerciseDetails = " select * from exercise e where e.ex_id = ?";
+    static final String viewExerciseQuestions = "select * from exercise e, exercise_has_question ehq, question q, parameter p"
+    											+ " where e.ex_id = ? and e.ex_id = ehq.ex_id and ehq.question_id = q.question_id and q.question_id = p.question_id ";
+    static final String countOfExercises = "select max(e.EX_ID) as \"maxExNum\" from exercise e";
+    static final String insertEx = "insert into exercise values (?,?,?,?,?,?,?,?)";
+    static final String checkDurationExist = "select count(*) as \"dateExists\" from duration where start_date=? and end_date = ?";
+    static final String insertDuration = "insert into duration values (?,? )";
+    static final String insertExDuration = "insert into exercise_has_duration values (?,?,? )";
+    static final String insertExCourseRelation = "insert into course_has_exercise values (?,?)";
+    static final String insertExQuestionRelation = "insert into exercise_has_question values (?,?)";
+    
+    static final String insertExQuestion = "insert into exercise_has_question values (?,?)";
+    
+    static final String getCountExQues = "select count(*) as \"exQuesCnt\" from exercise_has_question where ex_id = ?";
+    static final String getExMappedQues = "select q1.question_id, q1.text from question q1, exercise_has_question eq where eq.ex_id = ? and q1.question_id = eq.question_id";
+    static final String getExUnmappedQues = "select ehq.exercise_id, q.question_id, q.text from ex_has_ques ehq, question q " + 
+    											"where ehq.exercise_id = ? and ehq.question_id = q.question_id and q.question_id " + 
+    											"NOT IN (select q1.question_id from question q1, exercise_has_question eq where eq.ex_id = ? and q1.question_id = eq.question_id)";
+    static final String getUnmappedQuesCnt = "select count(*) \"leftQues\" from ex_has_ques ehq, question q " + 
+			"where ehq.exercise_id = ? and ehq.question_id = q.question_id and q.question_id " + 
+			"NOT IN (select q1.question_id from question q1, exercise_has_question eq where eq.ex_id = ? and q1.question_id = eq.question_id)";
+    
+    
+    
 }
