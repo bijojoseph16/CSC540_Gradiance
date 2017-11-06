@@ -107,35 +107,8 @@ public class Queries{
 
 	//Query to get course information given course ID
 	static final String getCourseByCourseID = "Select * from course where course_id = ?";
-<<<<<<< HEAD
-	
-    //Query to get back course ID if insrutor call enroll a student
-    //from Instructor hompeage
-    
-    static final String getCourseByCourseID2 = "declare" + 
-                                            " canEnroll int; "+
-                                            " instID int; "+
-                                            " cid int; " +
-                                            " cannotEnroll_ex exception; "+ 
-                                            " begin " +
-                                              " instID := ?;" +
-                                              " cid := ?;"+ 
-                                              " select count(*) into isPGStudent " + 
-                                              " from PG_ENROLLED " + 
-                                              " where student_id = sid and course_id = cid; " + 
-                                              " if isPGStudent = 0 then " + 
-                                                " raise notEnrolled_ex; " +
-                                              " else " +
-                                                " Delete from PG_ENROLLED where student_id = sid and course_id = cid; " + 
-                                              " end if; "+
-                                              "end;";
-
-	static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
-    static final String courseExists = "Select count(*) as \"course_exists\" from course where course_id = ?";
-=======
     static final String getCourseDuration = "Select TO_CHAR(start_date, 'MM/DD/YYYY') as \"start_date\",TO_CHAR(end_date, 'MM/DD/YYYY') as \"end_date\" From course_has_duration Where course_id = ?";
     static final String courseExists = "Select count(*) as \"course_exists\" from course c, professor_creates_course p where c.c_id = p.course_id  and c.course_id = ? and p.professor_id=?";
->>>>>>> f3a0e1b85ed82fc88092971aaaf80b795d7e6276
     
     //Query to check if Instructor can view course
     static final String instructorCanViewCourse = "Select count(*) as \"course_exists\" from professor_creates_course where professor_id=? and course_id in (Select c_id from course where course_id = ?)";
@@ -306,10 +279,8 @@ public class Queries{
             "       from dual; " + 
             "   end; ";
     
-<<<<<<< HEAD
     //Query to add question to queston bank
     static final String searchQuestionByQId = "Select * from question where question_id = ?";
-=======
     static final String viewExercise = "select * from exercise e, exercise_has_duration ehd, course_has_exercise ce "
     									+ "where e.ex_id = ce.exercise_id and ehd.ex_id = e.ex_id and ce.course_id = ?";
     static final String doesExerciseExist = "Select count(*) as \"ex_exists\" from exercise e, exercise_has_duration ehd, course_has_exercise ce "
@@ -346,7 +317,6 @@ public class Queries{
     
 
     static final String searchQuestion="Select * from question where question_id=?";
->>>>>>> f3a0e1b85ed82fc88092971aaaf80b795d7e6276
     
     //List topics
     static final String listTopics = "Select * from topic";

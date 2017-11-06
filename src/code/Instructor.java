@@ -288,15 +288,9 @@ public class Instructor {
         	   	return;
            }
          
-<<<<<<< HEAD
-           PreparedStatement psCourseExists = Connect.getConnection().prepareStatement(Queries.instructorCanViewCourse);
-           psCourseExists.setInt(1, instructorID);
-           psCourseExists.setString(2, courseID);
-=======
            PreparedStatement psCourseExists = Connect.getConnection().prepareStatement(Queries.courseExists);
            psCourseExists.setString(1, courseID);
            psCourseExists.setInt(2, instructorID);
->>>>>>> f3a0e1b85ed82fc88092971aaaf80b795d7e6276
            ResultSet rsCourseExists = psCourseExists.executeQuery();
            rsCourseExists.next();
          
@@ -371,11 +365,7 @@ public class Instructor {
              }
            }
            else {
-<<<<<<< HEAD
-               System.out.println("No permisssion to view this course.");
-=======
                System.out.println("Course does not exist/ Not created by You");
->>>>>>> f3a0e1b85ed82fc88092971aaaf80b795d7e6276
                Connect.close(psCourseExists);
                Connect.close(rsCourseExists);
                //Instructor.viewCourse(ip, instructorID);
