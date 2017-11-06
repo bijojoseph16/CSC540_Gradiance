@@ -18,9 +18,20 @@ public class Queries{
 	static final String getStudentByUIdPass = " select * from student where userid=? and password=?";
 	static final String getStudentByUId = " select * from student where student_id=? ";
 	static final String checkIfUgStudent = " select count(*) as \"ug_student\" from ug where student_id=?";
+
+	//QUery to check if the UG student details entered during enrollment are correct
+	static final String checkIfUgStudentGivenName = " select count(*) as \"ug_student\" from ug u, student s where u.student_id=?"
+	        + " and u.student_id = s.student_id and s.firstname=? and s.lastname=?";
+
 	static final String checkIfPgStudent = " select count(*) as \"pg_student\" from pg where student_id=?";
+
 	static final String getUgStudentCourses = " select c.c_id, c.course_id, c.course_name from ug_enrolled uge, course c where uge.student_id=? "
 												+ "and uge.course_id = c.c_id";
+	
+	//QUery to check if the PG student details entered during enrollment are correct
+	static final String checkIfPgStudentGivenName = " select count(*) as \"pg_student\" from pg p, student s where p.student_id=? and "
+	        + "p.student_id = s.student_id and s.firstname=? and s.lastname=?";
+	
 	static final String getPgStudentCourses = " select c.c_id, c.course_id, c.course_name from pg_enrolled pge, course c where pge.student_id=? "
 												+ "and pge.course_id = c.c_id";
 	

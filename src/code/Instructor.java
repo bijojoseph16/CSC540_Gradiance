@@ -13,7 +13,7 @@ public class Instructor {
      Functionalities
      
      *[Done] View Profile
-     *[] View Course
+     *[Done] View Course
        -[Done] View Course Name
        -[Done] View Course Start Date
        -[Pending] View Exercise
@@ -26,8 +26,8 @@ public class Instructor {
      *[Done] Add Course
      *[Done]Enroll Student
      *[Done]Drop Student
-     *[Pending]Search Qusetion in QB
-     *[Pending]Add Question in QB
+     *[Done]Search Qusetion in QB
+     *[Done]Add Question in QB
     
      */
     
@@ -35,16 +35,15 @@ public class Instructor {
       * Show Instructor homepage with options
       */
      public static void showHomePage(Scanner ip, int instructorID) {
+
          System.out.println("*****Instructor Homepage******");
          System.out.println("1.View Profile");
          System.out.println("2. View Course/Add Course");
-         //Doubtful, as students can only be added when we have
-         //a course ID.So I do ask for courseID
          System.out.println("3. Enroll a Student/Drop a Student");     
          System.out.println("4. Search Question in Question Bank/Add Question in Question Bank");
          System.out.println("5. Logout");
          
-         //Only 1, 2 are valid inputs
+ 
          try {
              //Take User input
              System.out.print("Choice : ");
@@ -52,31 +51,36 @@ public class Instructor {
              
              if(1 == choice) {
                  Instructor.viewProfile(ip, instructorID);
+                 return;
                  
              } else if(2 == choice){
                  Instructor.viewOrAddCourse(ip, instructorID);
+                 return;
                  
              } else if(3 == choice) {
-                 //This long function name is justifed as 
-                 //it from where 
                  Instructor.enrollOrDropStudentFromInstructorLogin(ip, instructorID);
+                 return;
                  
              } else if(4 == choice) {
                  Instructor.searchOrAddQuestionInQB(ip,instructorID);
+                 return;
                  
              }else if(5 == choice) {
                  Login.startPage(ip);
+                 return;
                  
              }
              else {
                  System.out.println("Invalid input");
                  Instructor.showHomePage(ip, instructorID);
-                 
+                 return;                 
              }
              
      }catch(NumberFormatException e) {
          System.out.println("Invalid input");
-         Instructor.showHomePage(ip, instructorID);                 
+         Instructor.showHomePage(ip, instructorID);
+         return;
+         
      }catch(Exception e) {
          e.printStackTrace();
      }
@@ -87,6 +91,7 @@ public class Instructor {
      
      /*
       * Show Instructor Profile
+      * No need to check if instructor exists as it is check during login
       */
      public static void viewProfile(Scanner ip, int instructorID) {
          //Show First Name, Last Name and Employee ID         
@@ -105,16 +110,19 @@ public class Instructor {
              Connect.close(ps);
              Connect.close(results);
   
-             //Take Use input
+             //Take User input
              System.out.println("Enter 0 Go Back");
              System.out.print("Choice: ");
              int choice = Integer.parseInt(ip.next());
              
              if(0 == choice) {
                  Instructor.showHomePage(ip, instructorID);
+                 return;
+                 
              }else {
                  System.out.println("Invalid input.");
                  Instructor.viewProfile(ip, instructorID);
+                 return;
              }
              
          }catch(Exception e) {
@@ -155,10 +163,9 @@ public class Instructor {
          }catch(NumberFormatException e) {
              //Invalid user inputs are handled
              System.out.println("Please enter valid input");
-             //Instructor.viewOrAddCourse(ip, instructorID);
              
          }catch(Exception e) {
-             e.printStackTrace();
+             System.out.println("Please enter valid input");
          }
          
          Instructor.viewOrAddCourse(ip, instructorID);
@@ -218,7 +225,9 @@ public class Instructor {
              //Instructor.showHomePage(ip, instructorID);
          }
          catch (Exception e) {
-             e.printStackTrace();
+             //e.printStackTrace();
+             System.out.println("Enter valid input");
+             
          } finally {
              Connect.close(ps);
              Connect.close(rs);
@@ -259,7 +268,11 @@ public class Instructor {
              return;
              
          } catch (Exception e) {
-             e.printStackTrace();
+             //e.printStackTrace();
+             System.out.println("Enter valid input");
+             Instructor.searchOrAddQuestionInQB(ip, instructorID);
+             return;
+
          }
      }
 
@@ -368,14 +381,14 @@ public class Instructor {
                System.out.println("Course does not exist/ Not created by You");
                Connect.close(psCourseExists);
                Connect.close(rsCourseExists);
-               //Instructor.viewCourse(ip, instructorID);
            }
            
          } catch (NumberFormatException e) {
              System.out.println("Please enter valid input");
-             //Instructor.viewCourse(ip, instructorID);
+             
          } catch (Exception e) {
-             e.printStackTrace();
+             System.out.println("Please enter valid input");
+             //e.printStackTrace();
          }
          Instructor.viewCourse(ip, instructorID);
          return;
@@ -486,27 +499,23 @@ public class Instructor {
              choice = Integer.parseInt(ip.nextLine());
              if(choice == 0) {
                  Instructor.viewOrAddCourse(ip, instructorID);
+                 return;
              }
            }while (choice != 0);
            
          } catch (SQLException e) {
-             e.printStackTrace();
+             //e.printStackTrace();
              System.out.println("Could not insert Course, Press Enter to try again");
-             Instructor.addCourse(ip, instructorID);
+             Instructor.viewOrAddCourse(ip, instructorID);
+             return;
              
          } catch (Exception e) {
-             e.printStackTrace();
+             System.out.println("Could not insert Course, Press Enter to try again");
+             Instructor.viewOrAddCourse(ip, instructorID);
+             return;
+
          } finally {
-             /*
-             Connect.close(psAddCourse);
-             Connect.close(rsAddCourse);
-             Connect.close(psCourseExists);
-             Connect.close(rsCourseExists);
-             Connect.close(psAddCourseDuration);
-             Connect.close(rsAddCourseDuration);
-             Connect.close(psGetCourseByC_ID);
-             Connect.close(rsGetCourseByC_ID);
-             */
+ 
          }
      }
 
@@ -534,13 +543,18 @@ public class Instructor {
            System.out.print("Enter Student's last name:");
            String studentLastName = ip.next();
            
-           psUGStudent = Connect.getConnection().prepareStatement(Queries.checkIfUgStudent);
+           psUGStudent = Connect.getConnection().prepareStatement(Queries.checkIfUgStudentGivenName);
            psUGStudent.setInt(1, studentID);
+           psUGStudent.setString(2, studentFirstName);
+           psUGStudent.setString(3, studentLastName);
            rsUGStudent = psUGStudent.executeQuery();
            rsUGStudent.next();
            
-           psPGStudent = Connect.getConnection().prepareStatement(Queries.checkIfPgStudent);
+           psPGStudent = Connect.getConnection().prepareStatement(Queries.checkIfPgStudentGivenName);
            psPGStudent.setInt(1, studentID);
+           psPGStudent.setString(2, studentFirstName);
+           psPGStudent.setString(3, studentLastName);
+
            rsPGStudent = psPGStudent.executeQuery();
            rsPGStudent.next();
 
@@ -560,9 +574,7 @@ public class Instructor {
                    }
                    
                } catch (Exception e) {
-                   System.out.println("Could not enroll UG Student\n");
-                   //Instructor.enrollOrDropStudent(ip);
-                   e.printStackTrace();
+                   System.out.println("Could not enroll UG Student\n");                   
                    
                } finally {
                    Connect.close(psUGStudent);
@@ -583,18 +595,17 @@ public class Instructor {
                } catch (SQLException e) {
                    if(e.getSQLState().startsWith("23")) {
                        System.out.println("Could not enroll PG Student, he is currently enrolled in the course\n");
-                   }
                    
+                   }
                    //Need to catch this PL-SQL exception
                    else {
                      System.out.println("Could not enroll PG Student as he is TA");
-                     //Instructor.enrollOrDropStudent(ip);
-                     //e.printStackTrace();
+
                    }
                    
                } catch(Exception e){
                    System.out.println("Could not enroll PG Student");
-                   e.printStackTrace();
+                   
                }
                  
                  finally {
@@ -605,45 +616,12 @@ public class Instructor {
                }
            }
            else {
-               System.out.println("Could not execute query as student does not exist");
-               //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+               System.out.println("Could not execute query as student does not exist/ details entered are incorrect.");
+
            }
+           
            Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
-          /*
-           //If UG_enrolled references UG and PG_enrolled refrences PG
-           //then this check can be done on database side, we need not do it in
-           //application
-           try {
-               psEnrollUGStudent = Connect.getConnection().prepareStatement(Queries.enrollUGStudent);
-               psEnrollUGStudent.setInt(1, studentID);
-               psEnrollUGStudent.setInt(2, cID);
-               psEnrollUGStudent.executeQuery();               
-           } catch(SQLException e) {
-               if (e.getSQLState().startsWith("23")) {
-                   Connect.close(psEnrollUGStudent);
-                   try {
-                       //Before this you will have to add code
-                       //Code that checks if a TA is not currently enrolled in that 
-                       //course
-                       psEnrollPGStudent = Connect.getConnection().prepareStatement(Queries.enrollPGStudent);
-                       psEnrollPGStudent.setInt(1, studentID);
-                       psEnrollPGStudent.setInt(2, cID);
-                       psEnrollPGStudent.executeQuery();                                          
-                   } catch(SQLException ex) {
-                       System.out.println("Student does not exist");
-                       ex.printStackTrace();
-                   } finally {
-                       Connect.close(psEnrollPGStudent);
-                   }
-               } finally {
-                   Connect.close(psEnrollUGStudent);
-               }
-               else {
-                   System.out.println("Invalid Input");
-                   e.printStackTrace();
-               }
-           }
-          */
+           return;
            
          } catch (Exception e) {
              e.printStackTrace();
@@ -671,13 +649,17 @@ public class Instructor {
             System.out.print("Enter Student's last name:");
             String studentLastName = ip.next();
             
-            psUGStudent = Connect.getConnection().prepareStatement(Queries.checkIfUgStudent);
+            psUGStudent = Connect.getConnection().prepareStatement(Queries.checkIfUgStudentGivenName);
             psUGStudent.setInt(1, studentID);
+            psUGStudent.setString(2, studentFirstName);
+            psUGStudent.setString(3, studentLastName);
             rsUGStudent = psUGStudent.executeQuery();
             rsUGStudent.next();
             
-            psPGStudent = Connect.getConnection().prepareStatement(Queries.checkIfPgStudent);
+            psPGStudent = Connect.getConnection().prepareStatement(Queries.checkIfPgStudentGivenName);
             psPGStudent.setInt(1, studentID);
+            psPGStudent.setString(2, studentFirstName);
+            psPGStudent.setString(3, studentLastName);
             rsPGStudent = psPGStudent.executeQuery();
             rsPGStudent.next();
 
@@ -688,15 +670,14 @@ public class Instructor {
                   psDropUGStudent.setInt(2, cID);
                   psDropUGStudent.executeQuery();
                   System.out.println("UG Student dropped successfully\n");
-                  //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                  
                   
                 } catch (SQLException e) {
                     System.out.println("Could not drop UG Student as he is not enrolled in course\n");
-                    e.printStackTrace();
+                    
                     
                 } catch (Exception e) {
-                    System.out.println("Could not drop UG Student\n");
-                    e.printStackTrace();
+                    System.out.println("Could not drop UG Student\n");  
                     
                 } finally {
                     Connect.close(psUGStudent);
@@ -712,15 +693,12 @@ public class Instructor {
                   psDropPGStudent.setInt(2, cID);
                   psDropPGStudent.executeQuery();
                   System.out.println("PG Successfully dropped Student");
-                  //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
                   
                 } catch (SQLException e) {
                     System.out.println("Could not enroll PG Student as he is not enrolled in the course");
-                    e.printStackTrace();
                     
                 } catch(Exception e){
                     System.out.println("Could not enroll PG Student");
-                    e.printStackTrace();
                     
                 } finally {
                     Connect.close(psPGStudent);
@@ -730,15 +708,15 @@ public class Instructor {
                 }
             }
             else {
-                System.out.println("Could not execute query as student does not exist");
-                //Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+                System.out.println("Could not execute query as student does not exist/Details entered are incorrect.");
             }
-            
-            Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
             
           } catch (Exception e) {
               e.printStackTrace();
-          } 
+          }          
+          Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+          return;
+
      }
       /*
        * Helper method to go back to appropriate screen after succes/failure in
@@ -748,9 +726,11 @@ public class Instructor {
           //On Success or if student does not exist return to the caller method
           if(callerFlag == 1) {
             Instructor.showHomePage(ip, instructorID);
+            return;
           }
           else if(callerFlag == 2) {
             Instructor.viewCourse(ip, instructorID);
+            return;
           }          
       }
       

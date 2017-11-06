@@ -278,8 +278,6 @@ public class TA{
 	 if(x==0) {
 		 TA.showCourse(ip,studentid);
 	 }
-	}
-
-	
+	}	
 
 }
