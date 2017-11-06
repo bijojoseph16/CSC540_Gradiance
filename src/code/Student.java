@@ -136,7 +136,7 @@ public class Student {
 				
 				//Take Use input
 				System.out.println("0. Go Back");
-				System.out.println("Or Select a course Id to view details");
+				System.out.println("Or Select a c_id to view details");
 				System.out.print("Choice: ");
 				
 				
