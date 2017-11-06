@@ -82,7 +82,9 @@ public class Instructor {
          return;
          
      }catch(Exception e) {
-         e.printStackTrace();
+         System.out.println("Invalid input");
+         Instructor.showHomePage(ip, instructorID);
+         return;
      }
 
      }
@@ -287,7 +289,7 @@ public class Instructor {
          try {
            System.out.println("*****View Course*****");
            System.out.println("Enter 0 to Go Back OR");
-           System.out.println("Enter Course ID:");
+           System.out.println("Enter Course ID (Ex.CSC540):");
            
            // if valid show course details
            //Show Course details
@@ -322,7 +324,7 @@ public class Instructor {
              
              System.out.println("Course Name: " + results.getString("Course_name"));
              cID = results.getInt("c_ID");
-             //System.out.println("Course unique idenrifier " + cID);
+             //System.out.println("Course unique identifier " + cID);
              PreparedStatement psCourseDuration = Connect.getConnection().prepareStatement(Queries.getCourseDuration);
              psCourseDuration.setInt(1, cID);
              ResultSet resultsCourseDuration = psCourseDuration.executeQuery();
@@ -356,9 +358,8 @@ public class Instructor {
                return;
                
              } else if(1 == choice) {
-            	 
-            	 	Instructor.viewOrAddExercise(ip, cID, instructorID);
-            	 	return;
+            	Instructor.viewOrAddExercise(ip, cID, instructorID);
+            	return;
             	 
              } if(2 == choice) {
                  Instructor.viewOrAddTA(ip, cID);
