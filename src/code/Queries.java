@@ -118,6 +118,7 @@ public class Queries{
     //static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
     //        + " values(?, to_date('?','YYYY-MM-DD HH24:MI:SS'),to_date('?','YYYY-MM-DD HH24:MI:SS')";
     
+    static final String instructorCreatesCourse = " Insert into professor_creates_course(course_id, professor_id) values(?, ?)";
     
     static final String durationExists = "Select count(*) as \"duration_exists\" from duration where start_date = ? and end_date = ?";
     static final String addDuration = "Insert into duration(start_date, end_date)"

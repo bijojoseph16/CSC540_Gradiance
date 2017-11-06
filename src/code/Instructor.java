@@ -391,6 +391,11 @@ public class Instructor {
 
          PreparedStatement psAddCourse = null;
          PreparedStatement psAddCourseDuration = null;
+         PreparedStatement psInstructorCreatesCourse = null;
+         
+         PreparedStatement psDurationExists = null;
+         ResultSet rsDurationExists = null;
+         
          PreparedStatement psGetCourseByC_ID = null;
          ResultSet rsGetCourseByC_ID = null;
          PreparedStatement psAddDuration = null;
@@ -424,10 +429,18 @@ public class Instructor {
            System.out.println("Enter Course End Date(yyyy-mm-dd):");
            String endDate = ip.nextLine();
            
-           psAddDuration = Connect.getConnection().prepareStatement(Queries.addDuration);
-           psAddDuration.setDate(1, java.sql.Date.valueOf(startDate));
-           psAddDuration.setDate(2, java.sql.Date.valueOf(endDate));
-           psAddDuration.executeQuery();
+           psDurationExists = Connect.getConnection().prepareStatement(Queries.durationExists);
+           psDurationExists.setDate(1, java.sql.Date.valueOf(startDate));
+           psDurationExists.setDate(2, java.sql.Date.valueOf(endDate));
+           rsDurationExists = psDurationExists.executeQuery();
+           rsDurationExists.next();
+           if(0 == rsDurationExists.getInt("duration_exists")) {
+             psAddDuration = Connect.getConnection().prepareStatement(Queries.addDuration);
+             psAddDuration.setDate(1, java.sql.Date.valueOf(startDate));
+             psAddDuration.setDate(2, java.sql.Date.valueOf(endDate));
+             psAddDuration.executeQuery();
+             Connect.close(psAddCourseDuration);
+           }
                   
 
            //If the course exists procceed to add adding the
@@ -451,11 +464,19 @@ public class Instructor {
            psAddCourseDuration.setDate(3, java.sql.Date.valueOf(endDate));             
            psAddCourseDuration.executeQuery();
            
+           psInstructorCreatesCourse = Connect.getConnection().prepareStatement(Queries.instructorCreatesCourse);
+           psInstructorCreatesCourse.setInt(1, cID);
+           psInstructorCreatesCourse.setInt(2, instructorID);
+           psInstructorCreatesCourse.executeQuery();
+           
            Connect.close(psAddCourse);
            Connect.close(psAddDuration);
-           Connect.close(psAddCourseDuration);
+           //Connect.close(psAddCourseDuration);
            Connect.close(psGetCourseByC_ID);
            Connect.close(rsGetCourseByC_ID);
+           Connect.close(psInstructorCreatesCourse);
+           Connect.close(psDurationExists);
+           Connect.close(rsDurationExists);
            
            System.out.println("Course has been successfully added");
            int choice ;
