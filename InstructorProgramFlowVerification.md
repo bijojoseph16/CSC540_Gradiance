@@ -1,7 +1,7 @@
 
 - [ ] There should be 3 login pages
   - [x] Instrutor
-  - [ ] TA
+  - [x] TA
   - [ ] Student
 - [x] Login as Instructor if successful you should see the following options 
 
