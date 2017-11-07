@@ -1,7 +1,7 @@
 
 - [ ] There should be 3 login pages
   - [x] Instrutor
-  - [x] TA
+  - [] TA
   - [ ] Student
 - [x] Login as Instructor if successful you should see the following options 
 
@@ -16,7 +16,7 @@
     - [x] He Selects View Course
       - [ ] Display all the courses added by the instructor
       - [x] Option to Go Back to Login page 
-      - [x] Ask instructor to input a courseID if successful show.(Instructor can only view course info of courses he created.) 
+      - [x] Ask instructor to input a courseID, if successful show.(Instructor can only view course info of courses he created.) 
         - [x] Course Name 
         - [x] Start Date 
         - [x] End Date
@@ -25,11 +25,11 @@
           - [ ] Instructor selects view exercise
             - [ ] List all the exercise of the course
             - [ ] Ask for exercise ID
-              - [ ] If valid show exercise details else reenter Ex ID
+              - [ ] If valid show exercise details else re enter Ex ID
                 - [ ] Show option to add/remove question from exercise
                 - [ ] 0 to Go back to View/Add exercise
-          - [ ] Instructo selects add exercise
-            - [ ] O to go back
+          - [ ] Instructor selects add exercise
+            - [ ] 0 to go back
             - [ ] Enter exercise id
             - [ ] Enter exercise name
             - [ ] Total number of question
@@ -39,6 +39,14 @@
             - [ ] Points for correct
             - [ ] Penalty for incorrect
         - [ ] View/Add TA
+          - [ ] Instructor selects view TA
+            - [ ] Show Student ID of TA
+            - [ ] First Name
+            - [ ] Last Name
+          - [ ] Instructor selects add TA(Instrutor can only add student if he is PG and not enrolled in course)
+            - [ ] Ask student ID
+            - [ ] First Name
+            - [ ] Last Name
         - [ ] Enroll/Drop Student
           - [x] He selects Enroll Student(On success automatically go back to View/Add Course.)
             - [x] Ask Student ID
@@ -48,8 +56,13 @@
             - [x] Ask Student ID
             - [x] Student First Name
             - [x] Student Last Name
-        
-        - [x] View Report
+           
+        - [x] View Report(Should show details of all students enrolled in course)
+          - [ ] Student ID
+          - [ ] First Name
+          - [ ] Last Name
+          - [ ] Grades for each exercise
+          
         - [x] Go Back option to go back to Instructor Login Page
     - [ ] He selects Add Course
       - [ ] Ask for Course ID(Ex CSC740)
