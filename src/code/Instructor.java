@@ -943,7 +943,8 @@ public class Instructor {
                 psAddQuestionToQB.executeQuery();
                 
             } catch (Exception e) {
-                e.printStackTrace();
+            		System.out.println("Could not add question. invalid Input");
+            		
             } finally {
                 Connect.close(psAddQuestionToQB);
             }
@@ -955,7 +956,8 @@ public class Instructor {
                rsListTopics = psListTopics.executeQuery();
                Instructor.showResultsSet(rsListTopics);
             } catch(Exception e) {
-                e.printStackTrace();
+            		System.out.println("Could not add question. invalid Input");
+                //e.printStackTrace();
             } finally {
                Connect.close(psListTopics);
                Connect.close(rsListTopics);
@@ -1053,14 +1055,15 @@ public class Instructor {
                          }
                          catch(SQLException e) {
                               System.out.println("Could not add question to QB");
-                              e.printStackTrace();
+                              //e.printStackTrace();
                          } finally {
                              Connect.close(psAddQuestionToParameter);
                         }
                         
                         
                     } catch (Exception e) {
-                        e.printStackTrace();
+                    		System.out.println("Could not add question to QB");
+                        //e.printStackTrace();
                     }
                 }
                 int arg;
@@ -1076,7 +1079,7 @@ public class Instructor {
             }
           } catch (Exception e) {
               System.out.println("Invalid Input");
-              e.printStackTrace();
+              //e.printStackTrace();
               Instructor.addQuestionInQB(ip, instructorID);
               return;
           }
@@ -1760,7 +1763,6 @@ public class Instructor {
 	  				break;
 	  			}
   			}
-  			
   			
   			
   			int retries = 0;
