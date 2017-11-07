@@ -1143,8 +1143,6 @@ public class Instructor {
             else if (2 == choice) {
               Instructor.addTA(ip, c_id);
               return;
-            }else if(0 == choice){
-            		
             }
             else if(0 == choice) {
               Instructor.viewCourse(ip, c_id); 
