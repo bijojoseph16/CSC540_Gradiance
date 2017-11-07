@@ -147,7 +147,7 @@ public class Instructor {
            int choice = Integer.parseInt(ip.next());
          
            if(1 == choice) {
-             Instructor.viewCourse(ip, instructorID);
+             Instructor.viewCourseMain(ip, instructorID);
              return;
            }
            else if(2 == choice) {
@@ -293,7 +293,7 @@ public class Instructor {
      /*
       * Show the relevant details for course
       */
-     public static void viewCourse(Scanner ip, int instructorID) {
+     public static void viewCourseMain(Scanner ip, int instructorID) {
          //Ask course ID
          int cID;
      
@@ -355,6 +355,34 @@ public class Instructor {
              Connect.close(psCourseDuration);
              Connect.close(resultsCourseDuration);
              
+             //Go to View course menu
+             Instructor.viewCourse(ip, cID, instructorID);
+             return;
+      
+           }
+           else {
+               System.out.println("Course does not exist/ Not created by You");
+               Connect.close(psCourseExists);
+               Connect.close(rsCourseExists);
+               //Instructor.viewCourse(ip, instructorID);
+           }
+           
+         } catch (NumberFormatException e) {
+             System.out.println("Please enter valid input");
+             //Instructor.viewCourse(ip, instructorID);
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+         Instructor.viewCourseMain(ip, instructorID);
+         return;
+       
+     }
+
+     public static void viewCourse(Scanner ip, int cID, int instructorID) {
+         //Ask course ID
+
+           System.out.println("*****View Course Menu*****");
+                 
              //Take User input
              System.out.println("");
              System.out.println("1.View exercise/Add exercise");
@@ -366,7 +394,7 @@ public class Instructor {
              int choice = Integer.parseInt(ip.next());
          
              if(0 == choice) {
-               Instructor.viewOrAddCourse(ip, instructorID);
+               Instructor.viewCourseMain(ip, instructorID);
                return;
                
              } else if(1 == choice) {
@@ -389,24 +417,15 @@ public class Instructor {
                  System.out.println("Invalid input.");
                  
              }
-           }
-           else {
-               System.out.println("Course does not exist/ Not created by You");
-               
-           }
            
-         } catch (NumberFormatException e) {
-             System.out.println("Please enter valid input");
-             
-         } catch (Exception e) {
-             System.out.println("Please enter valid input");
-             //e.printStackTrace();
-         }
-         Instructor.viewCourse(ip, instructorID);
+          
+         Instructor.viewCourse(ip, cID, instructorID);
          return;
        
      }
 
+     
+     
      /*
       * Add a course accept courseID, courseName,
       * the level of course, maxStudents,
@@ -631,9 +650,42 @@ public class Instructor {
                System.out.println("Could not execute query as student does not exist/ details entered are incorrect.");
 
            }
-           
-           Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
-           return;
+           Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID, cID);
+          /*
+           //If UG_enrolled references UG and PG_enrolled refrences PG
+           //then this check can be done on database side, we need not do it in
+           //application
+           try {
+               psEnrollUGStudent = Connect.getConnection().prepareStatement(Queries.enrollUGStudent);
+               psEnrollUGStudent.setInt(1, studentID);
+               psEnrollUGStudent.setInt(2, cID);
+               psEnrollUGStudent.executeQuery();               
+           } catch(SQLException e) {
+               if (e.getSQLState().startsWith("23")) {
+                   Connect.close(psEnrollUGStudent);
+                   try {
+                       //Before this you will have to add code
+                       //Code that checks if a TA is not currently enrolled in that 
+                       //course
+                       psEnrollPGStudent = Connect.getConnection().prepareStatement(Queries.enrollPGStudent);
+                       psEnrollPGStudent.setInt(1, studentID);
+                       psEnrollPGStudent.setInt(2, cID);
+                       psEnrollPGStudent.executeQuery();                                          
+                   } catch(SQLException ex) {
+                       System.out.println("Student does not exist");
+                       ex.printStackTrace();
+                   } finally {
+                       Connect.close(psEnrollPGStudent);
+                   }
+               } finally {
+                   Connect.close(psEnrollUGStudent);
+               }
+               else {
+                   System.out.println("Invalid Input");
+                   e.printStackTrace();
+               }
+           }
+          */
            
          } catch (Exception e) {
              System.out.println("Invalid input");
@@ -728,7 +780,7 @@ public class Instructor {
               System.out.println("Invalid input");
               //e.printStackTrace();
           }          
-          Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID);
+          Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID, cID);
           return;
 
      }
@@ -736,16 +788,16 @@ public class Instructor {
        * Helper method to go back to appropriate screen after succes/failure in
        * add/drop student
        */
-      public static void goBackAfterEnrollOrDrop(Scanner ip,int callerFlag, int instructorID) {
+      public static void goBackAfterEnrollOrDrop(Scanner ip,int callerFlag, int instructorID, int cID) {
           //On Success or if student does not exist return to the caller method
           if(callerFlag == 1) {
             Instructor.showHomePage(ip, instructorID);
             return;
           }
           else if(callerFlag == 2) {
-            Instructor.viewCourse(ip, instructorID);
+            Instructor.viewCourse(ip, cID, instructorID);
             return;
-          }          
+            }          
       }
       
      
@@ -1049,7 +1101,7 @@ public class Instructor {
               
               }else if(0 == choice) {
             	  		
-            	  		Instructor.viewCourse(ip, instructor_id);
+            	  		Instructor.viewCourse(ip, c_id, instructor_id);
             	  		return;
               
               }else {
@@ -1091,6 +1143,8 @@ public class Instructor {
             else if (2 == choice) {
               Instructor.addTA(ip, c_id);
               return;
+            }else if(0 == choice){
+            		
             }
             else if(0 == choice) {
               Instructor.viewCourse(ip, c_id); 
@@ -1134,7 +1188,7 @@ public class Instructor {
                   Instructor.dropStudent(ip, cID, instructorID, callerFlag);
                   return;
               }else if(0 == choice) {
-                  Instructor.viewCourse(ip, instructorID);
+                  Instructor.viewCourse(ip, cID, instructorID);
                   return;
                   
               }else {
@@ -1153,8 +1207,8 @@ public class Instructor {
               Connect.close(rs);
               
           }
-          //Go back to view Course page on success/failure
-          Instructor.viewCourse(ip, instructorID);
+          //Go back to view Course page on succes/failure
+          Instructor.viewCourse(ip, c_id, instructorID);
           return;
       }
 
@@ -1935,7 +1989,7 @@ public class Instructor {
 	    			int choice = ip.nextInt();
 	    			
 	    			if(choice == 0) {
-	    				Instructor.viewCourse(ip, instructorID);
+	    				Instructor.viewCourse(ip, c_id, instructorID);
 	    				return;
 	    			}else {
 	    				System.out.println("Invalid Input. Try Again");
