@@ -4,12 +4,14 @@
   - [ ] TA
   - [ ] Student
 - [ ] Login as Instructor if successful you should see the following options 
+
   - [ ] View Profile
     - [ ] Instructor select View Profile , profile information should be visible
       - [ ] Show First Name
       - [ ] Last Name
       - [ ] Instructor ID
       - [ ] Display option to Go Back to Instructor Login page
+
   - [ ] View/Add Course
     - [ ] He Selects View Course
       - [ ] Display all the courses added by the instructor
@@ -41,7 +43,7 @@
       - [ ] Student First Name
       - [ ] Student Last Name
 
-- [ ] Search/Add Question to QB
+  - [ ] Search/Add Question to QB
     - [ ] Instructor selects Search Question in QB
       - [ ] List all the questions in QB
         - [ ] Show option to select question by ID or Topic name
@@ -63,4 +65,5 @@
         - [ ] Ask parameters for each parameter combination
         - [ ] Ask for the answer
         - [ ] Go back option to go back to instructor login page..
-- [ ] Logout
+  
+   - [ ] Logout
