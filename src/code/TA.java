@@ -22,6 +22,8 @@ public class TA{
 			 case 3: TA.logout(studentid,ip); return;
 			 default:
 				 System.out.println("Invalid Input. Try again...");
+				 showHomePage(ip,studentid);
+				 return;
 			 }
 		}
 	}
@@ -53,10 +55,16 @@ public class TA{
 				TA.showHomePage(ip,studentid);
 				return;
 			}
+			
+			else {
+				System.out.println("Invalid Input. Try Again"); 
+				showProfile(ip,studentid);
+				return;
+			}
 	}
 	
 	public static void showCourse(Scanner ip,int studentid) {
-		
+		int flag=0;
 		System.out.println("Please enter Course ID: ");
 		int courseinput=ip.nextInt();
 		
@@ -69,10 +77,30 @@ public class TA{
 	          
 	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(getcoursesd);
 	          ResultSet rs2=pstmt2.executeQuery();
-	        
+	          
+	          if (!rs.isBeforeFirst() ) {    
+	        	    System.out.println("Invalid course input!!, press 0 to go back"); 
+	        	    flag=1;
+	        	    
+	        	    int iv=ip.nextInt();
+	        	    
+	        	    if(iv==0) {
+	        	    	showHomePage(ip,studentid);
+	        	    	return;
+	        	    }
+	        	    else {
+	        	    	System.out.println("Invalid input");
+	        	    	showCourse(ip,studentid);
+	        	    	return;
+	        	    }
+	        	}
 	         while(rs.next()) {
 		        	 System.out.println("1.Course Name: ");
 		        	 System.out.println(rs.getString("course_name"));
+		        	 if(rs.wasNull()) {
+		        		 System.out.println("Invalid course id");
+		        	 }
+		        	
 	         }
 	         
 	         while(rs2.next()) {
@@ -81,10 +109,15 @@ public class TA{
 				System.out.println("3. End Date: ");
 				System.out.println(rs2.getString("end_date"));			
 			 }
+	         
+	         
 		 }
 		 catch(SQLException e) {
 	          	e.printStackTrace();
+	          	
+			
 	          }
+			if(flag==0) {
 		 	System.out.println("4. View Exercise");
 			System.out.println("5. Enroll/Drop a Student");
 			System.out.println("6. View Report");
@@ -93,16 +126,27 @@ public class TA{
 			
 			switch(option) {
 			case 0: TA.showHomePage(ip,studentid);
+					return;
 			case 4: TA.viewExercise(ip,studentid,courseinput);
+					return;
 			case 5: TA.enrollDropStudent(ip,courseinput,studentid); 
+					return;
 			case 6: TA.viewReport(ip,courseinput,studentid);
+					return;
+			default:System.out.println("Invalid Input. Try Again"); 
+				showCourse(ip,studentid);
+				return;
+		
 		}
+		
+			}
+		
 		
 	}
 
 	public static void logout(int studentid,Scanner ip) {
 		Login.startPage(ip);
-	
+		return;
 	}
 	
 	public static void viewExercise(Scanner ip,int studentid,int courseinput) {
@@ -177,6 +221,9 @@ public class TA{
 	case 1: TA.enrollStudent(ip,course, studentid);
 	case 2: TA.dropStudent(ip,course, studentid);
 	case 0: TA.showCourse(ip,studentid);
+	default: System.out.println("Invalid Input. Try Again"); 
+			enrollDropStudent(ip,course,studentid);
+			return;
 	
 	}
 	
@@ -211,12 +258,21 @@ public class TA{
 		 }
 		 }
 		 catch(SQLException e) {
-	          	e.printStackTrace();
+	          //	e.printStackTrace();
+			 System.out.println("No such student exists or the student has already been enrolled!!");
 	          }
 		 System.out.println("Press 0 to go back");
 		 int x=ip.nextInt();
 		 if(x==0) {
-			 TA.showHomePage(ip, studentid);
+			 enrollDropStudent(ip,course,studentid);
+			 return;
+		 }
+		 
+		 else {
+			 System.out.println("Invalid Input. Try Again"); 
+			 enrollStudent(ip,course,studentid);
+			 return;
+			 
 		 }
 		
 	}
@@ -229,34 +285,73 @@ public class TA{
 		 String deleteUgStudent="Delete from ug_enrolled where student_id="+ id+" and course_id="+course;
 		 String checkIfPgStudent = " select count(*) as pg_student from pg where student_id="+id;
 		 String deletePgStudent="Delete from pg_enrolled where student_id="+id+" and course_id="+course;
+		 
+		 int flagug=0;
+		 int flagpg=0;
 		 try {
 	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(checkIfUgStudent);
 	          ResultSet rs=pstmt.executeQuery();
+	          
 	         while(rs.next()) {
 	          if(rs.getString("ug_student").equals("1")) {
+	        	  flagug=1;
 	        	  PreparedStatement pstmt2=Connect.getConnection().prepareStatement(deleteUgStudent);
 		          ResultSet rs2=pstmt2.executeQuery();
+		          
 		          System.out.println("Undergrad Student deleted");
 	 		 }
 	          else {
 	        	  PreparedStatement pstmt3=Connect.getConnection().prepareStatement(checkIfPgStudent);
 		          ResultSet rs3=pstmt3.executeQuery();
+		          
 		          while(rs3.next()) {
+		        	  if(rs3.getString("pg_student").equals("1")) {
+		        	  flagpg=1;
 		        	  PreparedStatement pstmt4=Connect.getConnection().prepareStatement(deletePgStudent);
 			          ResultSet rs4=pstmt4.executeQuery();
 		          System.out.println("Postgrad Student deleted");
 		          }
+		          }
 	          }
 	          
 		 }
+	        
 		 }
 		 catch(SQLException e) {
-	          	e.printStackTrace();
+	          e.printStackTrace();
+			// System.out.println("No such student was enrolled in the course!!");
 	          }
+		 
+		 if(flagug==0 && flagpg==0) {
+			 System.out.println("Student not enrolled in course!!, press 0 to go back");
+			 int iv=ip.nextInt();
+			 if(iv==0) {
+				 enrollDropStudent(ip,course,studentid);
+				 return;
+			 }
+			 
+			 else {
+				 System.out.println("Invalid input");
+				 dropStudent(ip,course,studentid);
+				 return;
+			 }
+			 
+		 }
+		 
+		 else {
 		 System.out.println("Press 0 to go back");
 		 int x=ip.nextInt();
 		 if(x==0) {
-			 TA.showHomePage(ip, studentid);
+			 enrollDropStudent(ip,course,studentid);
+			 return;
+		 }
+		 
+		 else {
+			 System.out.println("Invalid Input. Try Again"); 
+			 dropStudent(ip,course,studentid);
+			 return;
+		 }
+		 
 		 }
 
 	}
@@ -277,7 +372,18 @@ public class TA{
 	 int x=ip.nextInt();
 	 if(x==0) {
 		 TA.showCourse(ip,studentid);
+		 return;
 	 }
-	}	
+	 
+	 else {
+		 System.out.println("Invalid Input. Try Again"); 
+		 viewReport(ip,course_id,studentid);
+		 return;
+	 }
+	 
+	 
+	}
+
+	
 
 }
