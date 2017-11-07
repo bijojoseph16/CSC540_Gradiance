@@ -9,6 +9,7 @@ import dbconnect.Connect;
 
 public class Instructor {
     
+     static int instId = 0;
      /*
      Functionalities
      
@@ -34,8 +35,12 @@ public class Instructor {
      /*
       * Show Instructor homepage with options
       */
+	
+	
+	
      public static void showHomePage(Scanner ip, int instructorID) {
-
+    	 	
+    	 	instId = instructorID;
          System.out.println("*****Instructor Homepage******");
          System.out.println("1.View Profile");
          System.out.println("2. View Course/Add Course");
@@ -1145,7 +1150,7 @@ public class Instructor {
               return;
             }
             else if(0 == choice) {
-              Instructor.viewCourse(ip, c_id); 
+              Instructor.viewCourse(ip, c_id, instId); 
               return;
             }
             
