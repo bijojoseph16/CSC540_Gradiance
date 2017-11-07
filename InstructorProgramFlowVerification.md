@@ -1,25 +1,25 @@
 
 - [ ] There should be 3 login pages
-  - [x] Instrutor
-  - [] TA
+  - [ ] Instrutor
+  - [ ] TA
   - [ ] Student
-- [x] Login as Instructor if successful you should see the following options 
+- [ ] Login as Instructor if successful you should see the following options 
 
-  - [x] View Profile
-    - [x] Instructor select View Profile , profile information should be visible
-      - [x] Show First Name
-      - [x] Last Name
-      - [x] Instructor ID
-      - [x] Display option to Go Back to Instructor Login page
+  - [ ] View Profile
+    - [ ] Instructor select View Profile , profile information should be visible
+      - [ ] Show First Name
+      - [ ] Last Name
+      - [ ] Instructor ID
+      - [ ] Display option to Go Back to Instructor Login page
 
   - [ ] View/Add Course
-    - [x] He Selects View Course
+    - [ ] He Selects View Course
       - [ ] Display all the courses added by the instructor
-      - [x] Option to Go Back to Login page 
-      - [x] Ask instructor to input a courseID, if successful show.(Instructor can only view course info of courses he created.) 
-        - [x] Course Name 
-        - [x] Start Date 
-        - [x] End Date
+      - [ ] Option to Go Back to Login page 
+      - [ ] Ask instructor to input a courseID, if successful show.(Instructor can only view course info of courses he created.) 
+        - [ ] Course Name 
+        - [ ] Start Date 
+        - [ ] End Date
       - [ ] After course details are shown show additional option like
         - [ ] View/Add Exercise
           - [ ] Instructor selects view exercise
@@ -48,22 +48,22 @@
             - [ ] First Name
             - [ ] Last Name
         - [ ] Enroll/Drop Student
-          - [x] He selects Enroll Student(On success automatically go back to View/Add Course.)
-            - [x] Ask Student ID
-            - [x] Student First Name
-            - [x] Student Last Name
+          - [ ] He selects Enroll Student(On success automatically go back to View/Add Course.)
+            - [ ] Ask Student ID
+            - [ ] Student First Name
+            - [ ] Student Last Name
           - [ ] He selects Drop Student(On success automatically go back to View/Add Course.An instructor can only drop students enrolled in his course)
-            - [x] Ask Student ID
-            - [x] Student First Name
-            - [x] Student Last Name
+            - [ ] Ask Student ID
+            - [ ] Student First Name
+            - [ ] Student Last Name
            
-        - [x] View Report(Should show details of all students enrolled in course)
+        - [ ] View Report(Should show details of all students enrolled in course)
           - [ ] Student ID
           - [ ] First Name
           - [ ] Last Name
           - [ ] Grades for each exercise
           
-        - [x] Go Back option to go back to Instructor Login Page
+        - [ ] Go Back option to go back to Instructor Login Page
     - [ ] He selects Add Course
       - [ ] Ask for Course ID(Ex CSC740)
       - [ ] Ask Course Name
