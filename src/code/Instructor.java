@@ -1751,7 +1751,7 @@ public class Instructor {
   			
   			System.out.println("Define a duration for the Exercise");
   			System.out.println("The format followed for timestamp is 'YYYY-MM-DD HH24:MI:SS'. Input accordingly");
-  			System.out.println("Enter Start TimeStamp for this exercise (eg. 2017-10-16 00:00:00)");
+  			System.out.println("Enter Start TimeStamp for this exercise (eg. 2017-10-16 00:00:00.000)");
   			
   			
   			
@@ -1782,7 +1782,7 @@ public class Instructor {
   			
   			while(true){
   				
-	  			System.out.println("Enter Start Time (eg. 00:00:00) or 0 to Go Back");
+	  			System.out.println("Enter Start Time (eg. 00:00:00.000) or 0 to Go Back");
 	  			SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("hh:mm:ss");
 	  			stTime = ip.next();
 	  			
@@ -1834,7 +1834,7 @@ public class Instructor {
   			
   			while(true){
   				
-	  			System.out.println("Enter End Time (eg. 00:00:00) or to Go Back");
+	  			System.out.println("Enter End Time (eg. 00:00:00.000) or to Go Back");
 	  			SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("hh:mm:ss");
 	  			endTime = ip.next();
 	  			
