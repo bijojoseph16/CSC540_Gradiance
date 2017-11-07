@@ -1,17 +1,14 @@
-
 - [ ] There should be 3 login pages
   - [ ] Instrutor
   - [ ] TA
   - [ ] Student
 - [ ] Login as Instructor if successful you should see the following options 
-
   - [ ] View Profile
     - [ ] Instructor select View Profile , profile information should be visible
       - [ ] Show First Name
       - [ ] Last Name
       - [ ] Instructor ID
       - [ ] Display option to Go Back to Instructor Login page
-
   - [ ] View/Add Course
     - [ ] He Selects View Course
       - [ ] Display all the courses added by the instructor
@@ -55,14 +52,12 @@
           - [ ] He selects Drop Student(On success automatically go back to View/Add Course.An instructor can only drop students enrolled in his course)
             - [ ] Ask Student ID
             - [ ] Student First Name
-            - [ ] Student Last Name
-           
+            - [ ] Student Last Name           
         - [ ] View Report(Should show details of all students enrolled in course)
           - [ ] Student ID
           - [ ] First Name
           - [ ] Last Name
-          - [ ] Grades for each exercise
-          
+          - [ ] Grades for each exercise          
         - [ ] Go Back option to go back to Instructor Login Page
     - [ ] He selects Add Course
       - [ ] Ask for Course ID(Ex CSC740)
@@ -70,7 +65,6 @@
       - [ ] Course Start Date
       - [ ] Course End Date
       - [ ] Go back option
-
   - [ ] Enroll/Drop Student
     - [ ] He selects Enroll Student(On success automatically go back to Instructor login.)
       - [ ] Ask Student ID
@@ -80,7 +74,6 @@
       - [ ] Ask Student ID
       - [ ] Student First Name
       - [ ] Student Last Name
-
   - [ ] Search/Add Question to QB
     - [ ] Instructor selects Search Question in QB
       - [ ] List all the questions in QB
@@ -118,6 +111,5 @@
         - [ ] Ask the number of parameter combination(max3)
         - [ ] Ask parameters for each parameter combination
         - [ ] Ask for the answer
-        - [ ] Go back option to go back to instructor login page..
-  
+        - [ ] Go back option to go back to instructor login page. 
    - [ ] Logout
