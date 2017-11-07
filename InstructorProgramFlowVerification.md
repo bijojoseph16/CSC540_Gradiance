@@ -22,8 +22,33 @@
         - [ ] End Date
       - [ ] After course details are shown show additional option like
         - [ ] View/Add Exercise
+          - [ ] Instructor selects view exercise
+            - [ ] List all the exercise of the course
+            - [ ] Ask for exercise ID
+              - [ ] If valid show exercise details else reenter Ex ID
+                - [ ] Show option to add/remove question from exercise
+                - [ ] 0 to Go back to View/Add exercise
+          - [ ] Instructo selects add exercise
+            - [ ] O to go back
+            - [ ] Enter exercise id
+            - [ ] Enter exercise name
+            - [ ] Total number of question
+            - [ ] Retries
+            - [ ] Start date
+            - [ ] End date
+            - [ ] Points for correct
+            - [ ] Penalty for incorrect
         - [ ] View/Add TA
         - [ ] Enroll/Drop Student
+          - [ ] He selects Enroll Student(On success automatically go back to View/Add Course.)
+            - [ ] Ask Student ID
+            - [ ] Student First Name
+            - [ ] Student Last Name
+          - [ ] He selects Drop Student(On success automatically go back to View/Add Course.An instructor can only drop students enrolled in his course)
+            - [ ] Ask Student ID
+            - [ ] Student First Name
+            - [ ] Student Last Name
+        
         - [ ] View Report
         - [ ] Go Back option to go back to Instructor Login Page
     - [ ] He selects Add Course
@@ -34,7 +59,7 @@
       - [ ] Go back option
 
   - [ ] Enroll/Drop Student
-    - [ ]  He selects Enroll Student(On success automatically go back to Instructor login.)
+    - [ ] He selects Enroll Student(On success automatically go back to Instructor login.)
       - [ ] Ask Student ID
       - [ ] Student First Name
       - [ ] Student Last Name
@@ -48,6 +73,22 @@
       - [ ] List all the questions in QB
         - [ ] Show option to select question by ID or Topic name
         - [ ] Add question to QB
+          - [ ] Instructor selects Add Question to QB
+            - [ ] Ask Question ID
+            - [ ] Question type(Fixed/Parametrized)
+            - [ ] Question text
+            - [ ] Topic the question falls under
+            - [ ] Difficulty level
+            - [ ] Solution 
+            - [ ] Hint
+            - [ ] If the question was non parametrized
+              - [ ] Ask for the answer(a/b/c/d)
+              - [ ] Go back option to go back to instructor login page
+            - [ ] If the question was parametrized
+              - [ ] Ask the number of parameter combination(max3)
+              - [ ] Ask parameters for each parameter combination
+              - [ ] Ask for the answer
+              - [ ] Go back option to go back to Search/Add Question in QB.        
         - [ ] Go back, to Instructor Login page(homepage)
     - [ ] Instructor selects Add Question to QB
       - [ ] Ask Question ID
