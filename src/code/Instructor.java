@@ -133,7 +133,8 @@ public class Instructor {
              }
              
          }catch(Exception e) {
-             e.printStackTrace();
+             System.out.println("Something went wrong please try again.");
+             //e.printStackTrace();
          }
 
      }
@@ -389,7 +390,8 @@ public class Instructor {
              System.out.println("Please enter valid input");
              //Instructor.viewCourse(ip, instructorID);
          } catch (Exception e) {
-             e.printStackTrace();
+             System.out.println("Invalid input.");
+             //e.printStackTrace();
          }
          Instructor.viewCourseMain(ip, instructorID);
          return;
@@ -669,42 +671,6 @@ public class Instructor {
 
            }
            Instructor.goBackAfterEnrollOrDrop(ip, callerFlag, instructorID, cID);
-          /*
-           //If UG_enrolled references UG and PG_enrolled refrences PG
-           //then this check can be done on database side, we need not do it in
-           //application
-           try {
-               psEnrollUGStudent = Connect.getConnection().prepareStatement(Queries.enrollUGStudent);
-               psEnrollUGStudent.setInt(1, studentID);
-               psEnrollUGStudent.setInt(2, cID);
-               psEnrollUGStudent.executeQuery();               
-           } catch(SQLException e) {
-               if (e.getSQLState().startsWith("23")) {
-                   Connect.close(psEnrollUGStudent);
-                   try {
-                       //Before this you will have to add code
-                       //Code that checks if a TA is not currently enrolled in that 
-                       //course
-                       psEnrollPGStudent = Connect.getConnection().prepareStatement(Queries.enrollPGStudent);
-                       psEnrollPGStudent.setInt(1, studentID);
-                       psEnrollPGStudent.setInt(2, cID);
-                       psEnrollPGStudent.executeQuery();                                          
-                   } catch(SQLException ex) {
-                       System.out.println("Student does not exist");
-                       ex.printStackTrace();
-                   } finally {
-                       Connect.close(psEnrollPGStudent);
-                   }
-               } finally {
-                   Connect.close(psEnrollUGStudent);
-               }
-               else {
-                   System.out.println("Invalid Input");
-                   e.printStackTrace();
-               }
-           }
-          */
-           
          } catch (Exception e) {
              System.out.println("Invalid input");
              //e.printStackTrace();
@@ -846,7 +812,8 @@ public class Instructor {
     	          
     		 }
     		 catch(SQLException e) {
-    	          	e.printStackTrace();
+    		        System.out.println("Query cannot be executed.");
+    	          	//e.printStackTrace();
     	          }
         	  
         	  System.out.println("Press 0 to go back");
@@ -870,7 +837,8 @@ public class Instructor {
     	          showResultsSet(rs);
     		 }
     		 catch(SQLException e) {
-    	          	e.printStackTrace();
+    		        System.out.println("Query cannot be executed.");
+    	          	//e.printStackTrace();
     	          }
         	  System.out.println("Press 0 to go back");
         	  int arg3=ip.nextInt();
@@ -891,7 +859,8 @@ public class Instructor {
               return;
               
           } catch (Exception e) {
-              e.printStackTrace();
+              System.out.println("Invalid Input");
+              //e.printStackTrace();
           }
       }
        
@@ -924,7 +893,7 @@ public class Instructor {
             String qtext = ip.nextLine();
             
             //Right now we only allow the instructor to add 4 options
-            System.out.println("Please enter 4 options");
+            System.out.println("Please enter 4 options. After entering each option press Enter.");
             for(int i = 0; i < 4; i++) {
                 qtext += "\n" + String.valueOf((char)(97 + i)) + ") " + ip.nextLine();
             }
@@ -987,11 +956,12 @@ public class Instructor {
                     psAddQuestionToQuestionHasTopic.executeQuery();
 
                 } catch(Exception e) {
-                    e.printStackTrace();
+                    System.out.println("Invalid input.");
+                    //e.printStackTrace();
                 } finally {
                     Connect.close(psAddQuestionToQuestionHasTopic);
                 }
-                System.out.println("Enter 0 to stop else press 1 to continue");
+                System.out.println("Enter 0 to stop else press 1 to continue adding more Topic ID's.");
                 int choice = Integer.parseInt(ip.nextLine());
                 if(0 == choice) {
                     break;
@@ -1022,7 +992,7 @@ public class Instructor {
                }
                catch(SQLException e) {
                     System.out.println("Could not add question to QB");
-                    e.printStackTrace();
+                    //e.printStackTrace();
                } finally {
                     Connect.close(psAddQuestionToParameter);
                }
@@ -1049,7 +1019,7 @@ public class Instructor {
                 //Assumption only 3 parameters possible
                 for(int i = 0; i < paramIDIndex; i++) {
                     try {
-                        System.out.println("Enter parameter combination(Example x,y,x)");
+                        System.out.println("Enter substitution for each parameter(Ex x = 1, y = 0..).");
                         parameters = ip.nextLine();
                         System.out.println("Enter answer for this parameter combination, it should be present in the option.");
                         qans = ip.nextLine();
@@ -1078,6 +1048,7 @@ public class Instructor {
                     		System.out.println("Could not add question to QB");
                         //e.printStackTrace();
                     }
+                
                 }
                 int arg;
                 do {
@@ -1138,7 +1109,8 @@ public class Instructor {
                 return;
                 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Invalid input");
+                //e.printStackTrace();
                 
             }
       }
@@ -1502,7 +1474,8 @@ public class Instructor {
 
     	  			
     	  		}catch(Exception e){
-    	  			e.printStackTrace();
+    	  		    System.out.println("Invalid input.");
+    	  			//e.printStackTrace();
     	  		}finally {
     	  			Connect.close(ps);
     	  			Connect.close(ps1);
@@ -1632,7 +1605,8 @@ public class Instructor {
 
 
     	  	}catch(Exception e){
-    	  		e.printStackTrace();
+    	  		//e.printStackTrace();
+    	  		System.out.println("Could not remove question from exercise");
     	  	}finally {
     	  		Connect.close(ps);
     	  		Connect.close(ps1);
@@ -1974,7 +1948,8 @@ public class Instructor {
   			Instructor.viewExercise(ip, c_id, instructor_id);
   			
   		}catch(Exception e) {
-  			e.printStackTrace();
+  			//e.printStackTrace();
+  			System.out.println("Could not add exercise to database");
   			
   		}finally {
   			Connect.close(ps1); Connect.close(rs);
@@ -2016,8 +1991,8 @@ public class Instructor {
     			
     			
     		}catch(Exception e){
-    			
-    			e.printStackTrace();
+    			System.out.println("Error occured cannot view report");
+    			//e.printStackTrace();
     			
     		}finally {
     			
@@ -2172,7 +2147,8 @@ public class Instructor {
   			
   		} catch (SQLException e) {
   			// TODO Auto-generated catch block
-  			e.printStackTrace();
+  		    System.out.println("Error in result set display.");
+  			//e.printStackTrace();
   		}
       }
 
