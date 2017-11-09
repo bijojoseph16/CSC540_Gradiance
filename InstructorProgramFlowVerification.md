@@ -1,9 +1,9 @@
 - [ ] There should be 3 login pages
-  - [X] Instrutor
+  - [x] Instrutor
   - [ ] TA
   - [ ] Student
 - [ ] Login as Instructor if successful you should see the following options 
-  - [ ] View Profile
+  - [x] View Profile
     - [x] Instructor select View Profile , profile information should be visible
       - [x] Show First Name
       - [x] Last Name
@@ -20,15 +20,15 @@
       - [ ] After course details are shown show additional option like
         - [ ] View/Add Exercise
           - [ ] Instructor selects view exercise
-            - [x] List all the exercise of the course
-            - [x] Ask for exercise ID
-              - [x] If valid show exercise details else re enter Ex ID
-                - [x] Show option to add/remove question from exercise
+            - [ ] List all the exercise of the course
+            - [ ] Ask for exercise ID
+              - [ ] If valid show exercise details else re enter Ex ID
+                - [ ] Show option to add/remove question from exercise
                   - [ ] Instructor selects add question
                     - [ ] Follow instruction to add question, if successful add question
                   - [ ] Instructor selects remove question
                     - [ ] Follow instructions to remove question, if succeessful remove question
-                - [x] 0 to Go back to View/Add exercise
+                - [ ] 0 to Go back to View/Add exercise
           - [ ] Instructor selects add exercise
             - [ ] 0 to go back
             - [ ] Enter exercise id
