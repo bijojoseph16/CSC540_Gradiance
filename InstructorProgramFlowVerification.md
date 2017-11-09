@@ -1,22 +1,22 @@
 - [ ] There should be 3 login pages
-  - [ ] Instrutor
+  - [x] Instrutor
   - [ ] TA
   - [ ] Student
 - [ ] Login as Instructor if successful you should see the following options 
-  - [ ] View Profile
-    - [ ] Instructor select View Profile , profile information should be visible
-      - [ ] Show First Name
-      - [ ] Last Name
-      - [ ] Instructor ID
-      - [ ] Display option to Go Back to Instructor Login page
+  - [x] View Profile
+    - [x] Instructor select View Profile , profile information should be visible
+      - [x] Show First Name
+      - [x] Last Name
+      - [x] Instructor ID
+      - [x] Display option to Go Back to Instructor Login page
   - [ ] View/Add Course
     - [ ] He Selects View Course
-      - [ ] Display all the courses added by the instructor
-      - [ ] Option to Go Back to Login page 
-      - [ ] Ask instructor to input a courseID, if successful show.(Instructor can only view course info of courses he created.) 
-        - [ ] Course Name 
-        - [ ] Start Date 
-        - [ ] End Date
+      - [x] Display all the courses added by the instructor
+      - [x] Option to Go Back to Login page 
+      - [x] Ask instructor to input a courseID, if successful show.(Instructor can only view course info of courses he created.) 
+        - [x] Course Name 
+        - [x] Start Date 
+        - [x] End Date
       - [ ] After course details are shown show additional option like
         - [ ] View/Add Exercise
           - [ ] Instructor selects view exercise
@@ -24,6 +24,10 @@
             - [ ] Ask for exercise ID
               - [ ] If valid show exercise details else re enter Ex ID
                 - [ ] Show option to add/remove question from exercise
+                  - [ ] Instructor selects add question
+                    - [ ] Follow instruction to add question, if successful add question
+                  - [ ] Instructor selects remove question
+                    - [ ] Follow instructions to remove question, if succeessful remove question
                 - [ ] 0 to Go back to View/Add exercise
           - [ ] Instructor selects add exercise
             - [ ] 0 to go back
@@ -35,24 +39,24 @@
             - [ ] End date
             - [ ] Points for correct
             - [ ] Penalty for incorrect
-        - [ ] View/Add TA
-          - [ ] Instructor selects view TA
-            - [ ] Show Student ID of TA
-            - [ ] First Name
-            - [ ] Last Name
-          - [ ] Instructor selects add TA(Instrutor can only add student if he is PG and not enrolled in course)
-            - [ ] Ask student ID
-            - [ ] First Name
-            - [ ] Last Name
-        - [ ] Enroll/Drop Student
-          - [ ] He selects Enroll Student(On success automatically go back to View/Add Course.)
-            - [ ] Ask Student ID
-            - [ ] Student First Name
-            - [ ] Student Last Name
-          - [ ] He selects Drop Student(On success automatically go back to View/Add Course.An instructor can only drop students enrolled in his course)
-            - [ ] Ask Student ID
-            - [ ] Student First Name
-            - [ ] Student Last Name           
+        - [x] View/Add TA
+          - [x] Instructor selects view TA
+            - [x] Show Student ID of TA
+            - [x] First Name
+            - [x] Last Name
+          - [x] Instructor selects add TA(Instrutor can only add student if he is PG and not enrolled in course)
+            - [x] Ask student ID
+            - [x] First Name
+            - [x] Last Name
+        - [x] Enroll/Drop Student
+          - [x] He selects Enroll Student(On success automatically go back to View/Add Course.)
+            - [x] Ask Student ID
+            - [x] Student First Name
+            - [x] Student Last Name
+          - [x] He selects Drop Student(On success automatically go back to View/Add Course.An instructor can only drop students enrolled in his course)
+            - [x] Ask Student ID
+            - [x] Student First Name
+            - [x] Student Last Name           
         - [ ] View Report(Should show details of all students enrolled in course)
           - [ ] Student ID
           - [ ] First Name
@@ -90,11 +94,11 @@
             - [ ] If the question was non parametrized
               - [ ] Ask for the answer(a/b/c/d)
               - [ ] Go back option to go back to instructor login page
-            - [ ] If the question was parametrized
-              - [ ] Ask the number of parameter combination(max3)
-              - [ ] Ask parameters for each parameter combination
-              - [ ] Ask for the answer
-              - [ ] Go back option to go back to Search/Add Question in QB.        
+            - [x] If the question was parametrized
+              - [x] Ask the number of parameter combination(max3)
+              - [x] Ask parameters for each parameter combination
+              - [x] Ask for the answer
+              - [x] Go back option to go back to Search/Add Question in QB.        
         - [ ] Go back, to Instructor Login page(homepage)
     - [ ] Instructor selects Add Question to QB
       - [ ] Ask Question ID
