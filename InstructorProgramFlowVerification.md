@@ -94,11 +94,11 @@
             - [ ] If the question was non parametrized
               - [ ] Ask for the answer(a/b/c/d)
               - [ ] Go back option to go back to instructor login page
-            - [ ] If the question was parametrized
-              - [ ] Ask the number of parameter combination(max3)
-              - [ ] Ask parameters for each parameter combination
-              - [ ] Ask for the answer
-              - [ ] Go back option to go back to Search/Add Question in QB.        
+            - [x] If the question was parametrized
+              - [x] Ask the number of parameter combination(max3)
+              - [x] Ask parameters for each parameter combination
+              - [x] Ask for the answer
+              - [x] Go back option to go back to Search/Add Question in QB.        
         - [ ] Go back, to Instructor Login page(homepage)
     - [ ] Instructor selects Add Question to QB
       - [ ] Ask Question ID
