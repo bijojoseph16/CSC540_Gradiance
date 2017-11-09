@@ -124,6 +124,8 @@ public class Queries{
     //Query to check if Instructor can view course
     static final String instructorCanViewCourse = "Select count(*) as \"course_exists\" from professor_creates_course where professor_id=? and course_id in (Select c_id from course where course_id = ?)";
 
+    //Query to show all courses created by Instructor
+    static final String viewCoursesCreated = "Select C.course_id from Course C, Professor_creates_course P where C.c_id = P.course_id and P.professor_id = ?";
     //Query to add course
     static final String addCourse = "Insert into course (course_id, course_name,course_level,max_students) values (?,?,?,?)";
     //static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"

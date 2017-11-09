@@ -301,11 +301,24 @@ public class Instructor {
      public static void viewCourseMain(Scanner ip, int instructorID) {
          //Ask course ID
          int cID;
-     
+         //Show the instructor all courses he has created
+         PreparedStatement psCoursesCreatedByInstructor = null;
+         ResultSet rsCoursesCreatedByInstructor = null;
+         try {
+             psCoursesCreatedByInstructor = Connect.getConnection().prepareStatement(Queries.viewCoursesCreated);
+             psCoursesCreatedByInstructor.setInt(1, instructorID);
+             rsCoursesCreatedByInstructor = psCoursesCreatedByInstructor.executeQuery();
+             
+             Instructor.showResultsSet(rsCoursesCreatedByInstructor);
+         } catch (Exception e) {
+             System.out.println("Invalid input");
+         } finally {
+             
+         }
          try {
            System.out.println("*****View Course*****");
            System.out.println("Enter 0 to Go Back OR");
-           System.out.println("Enter Course ID (Ex.CSC540):");
+           System.out.println("Enter Course ID from courses listed above:");
            
            // if valid show course details
            //Show Course details
