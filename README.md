@@ -27,3 +27,10 @@ from course c, enrollments e
 where c.c_id = e.course_id
 group by c.course_id, c.course_name;
 ```
+### 4.Show a report of all homework and attempts for all students enrolled in CSC540
+```sql
+select s_ex.student_id, c_ex.exercise_id, s_ex.attempt_number, s_ex.points_earned
+from course_has_exercise c_ex, course c, student s, student_submits_exercise s_ex
+where c.course_id = 'CSC540' and c.c_id = c_ex.course_id and s.student_id = s_ex.student_id and s_ex.ex_id = c_ex.exercise_id
+
+```
