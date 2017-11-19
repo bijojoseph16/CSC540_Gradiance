@@ -65,7 +65,7 @@ public class TA{
 	
 	public static void showCourse(Scanner ip,int studentid) {
 		int flag=0;
-		System.out.println("Please enter Course ID: ");
+		System.out.println("Please enter Course ID (1,2,3,4): ");
 		int courseinput=ip.nextInt();
 		
 		String getcourseinfo="Select * from course where c_id="+courseinput;
