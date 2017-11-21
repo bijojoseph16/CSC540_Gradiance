@@ -170,7 +170,7 @@ public class TA{
 			int i=ip.nextInt();
 			
 			if(i==0) {
-				showCourse(ip,studentid);
+				showHomePage(ip,studentid);
 				return;
 			}
 		}
@@ -209,7 +209,7 @@ public class TA{
 		 int gbsc=ip.nextInt();
 		
 			if(gbsc==0) {
-				TA.showCourse(ip,studentid);
+				TA.showHomePage(ip,studentid);
 				return;
 			}else {
 				System.out.println("Invalid Input. Try Again");
@@ -256,7 +256,7 @@ public class TA{
 	switch(x) {
 	case 1: TA.enrollStudent(ip,course, studentid);
 	case 2: TA.dropStudent(ip,course, studentid);
-	case 0: TA.showCourse(ip,studentid);
+	case 0: TA.showHomePage(ip,studentid);
 	default: System.out.println("Invalid Input. Try Again"); 
 			enrollDropStudent(ip,course,studentid);
 			return;
@@ -447,7 +447,7 @@ public class TA{
 	 System.out.println("Press 0 to go back");
 	 int x=ip.nextInt();
 	 if(x==0) {
-		 TA.showCourse(ip,studentid);
+		 TA.showHomePage(ip,studentid);
 		 return;
 	 }
 	 
