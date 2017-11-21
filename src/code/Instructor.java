@@ -2019,6 +2019,12 @@ public class Instructor {
 	
     		try{
     			
+    			ps1 = Connect.getConnection().prepareStatement(Queries.studentInCourse);
+    			ps1.setInt(1, c_id);
+    			System.out.println("Students Enrolled in the Course");
+    			Instructor.showResultsSet(ps1.executeQuery());
+    			
+    			System.out.println("Progress Report");
     			ps = Connect.getConnection().prepareStatement(Queries.showStudentReportForCourse);
     			ps.setInt(1, c_id);
     			Instructor.showResultsSet(ps.executeQuery());

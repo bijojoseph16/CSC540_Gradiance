@@ -343,6 +343,8 @@ public class Queries{
     													"where s.student_id = sse.student_id and c.c_id = ? and c.c_id = che.course_id and che.exercise_id = sse.ex_id " + 
     													"order by s.student_id, sse.ex_id";
     
+    static final String studentInCourse = "select s.student_id, s.firstname, s.lastname from student s, enrollments e where s.student_id = e.student_id and e.course_id = ?";
+    
     static final String numQuesInTable = "select count(*) as \"numQues\" from question";
     
 
