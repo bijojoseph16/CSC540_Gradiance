@@ -4,7 +4,7 @@
   - [ ] Student
 - [ ] Login as Instructor if successful you should see the following options 
   - [x] View Profile
-    - [x] Instructor select View Profile , profile information should be visible
+    - [x] Instructor select View Profile , profile informaqtion should be visible
       - [x] Show First Name
       - [x] Last Name
       - [x] Instructor ID

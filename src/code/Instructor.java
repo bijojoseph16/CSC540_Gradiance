@@ -339,7 +339,7 @@ public class Instructor {
            ResultSet rsCourseExists = psCourseExists.executeQuery();
            rsCourseExists.next();
            int courseExists =  rsCourseExists.getInt("course_exists");
-           //System.out.println(courseExists);
+           System.out.println(courseExists);
            Connect.close(psCourseExists);
            Connect.close(rsCourseExists);
            //If the course exists show the course name
@@ -362,7 +362,7 @@ public class Instructor {
              psCourseDuration.setInt(1, cID);
              ResultSet resultsCourseDuration = psCourseDuration.executeQuery();
              resultsCourseDuration.next();
-         
+             //System.out.println("Getting course duration");
              String startDate = resultsCourseDuration.getString("start_date");
              String endDate = resultsCourseDuration.getString("end_date");
       
@@ -391,7 +391,7 @@ public class Instructor {
              //Instructor.viewCourse(ip, instructorID);
          } catch (Exception e) {
              System.out.println("Invalid input.");
-             //e.printStackTrace();
+             e.printStackTrace();
          }
          Instructor.viewCourseMain(ip, instructorID);
          return;
@@ -634,7 +634,7 @@ public class Instructor {
                    
                }
            }
-           else if(1 == rsPGStudent.getInt("pg_student")) {
+           else if(1 <= rsPGStudent.getInt("pg_student")) {
                try {
                  psEnrollPGStudent = Connect.getConnection().prepareStatement(Queries.enrollPGStudent);
                  psEnrollPGStudent.setInt(1, studentID);
