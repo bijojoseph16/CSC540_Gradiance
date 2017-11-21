@@ -778,7 +778,7 @@ public class Instructor {
                     
                 }
             }
-            else if(1 == rsPGStudent.getInt("pg_student")) {
+            else if(1 <= rsPGStudent.getInt("pg_student")) {
                 try {
                   psDropPGStudent = Connect.getConnection().prepareStatement(Queries.dropPGStudent);
                   psDropPGStudent.setInt(1, studentID);
