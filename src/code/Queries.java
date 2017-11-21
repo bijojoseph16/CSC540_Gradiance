@@ -103,7 +103,7 @@ public class Queries{
 	static final String fetchAdaptiveExQuestions = "select ehq.question_id, q.text, p.parameters, p.answer, q.solution, q.question_level, q.hint "
 			+ "from ex_has_ques ehq, question q, parameter p "
 			+ "where ehq.exercise_id=? and ehq.question_id = q.question_id and q.question_id = p.question_id "
-			+ "and (p.param_id = (select floor(dbms_random.value(1,4)) as num from dual) or p.param_id = 0)";	
+			+ "and (p.param_id = (select floor(dbms_random.value(1,3)) as num from dual) or p.param_id = 0)";	
 	
 	static final String updateStudentExeriseSubmission = "INSERT INTO STUDENT_SUBMITS_EXERCISE (" +  
 			"  STUDENT_ID, " + 
