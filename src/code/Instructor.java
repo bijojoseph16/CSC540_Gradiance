@@ -1750,8 +1750,9 @@ public class Instructor {
   			//Enter points for incorrect answer
   			int ptIncorr = 0;
   			while(true) {
-	  			
+	  			ip.nextLine();
   				System.out.println("Enter Points for Incorrect Answer (add 0 or negative number eg. -1) or g to Go Back");
+  				
   				String ptIncorrS = ip.nextLine();
   				//ptIncorr = ip.nextInt();
 	  			
