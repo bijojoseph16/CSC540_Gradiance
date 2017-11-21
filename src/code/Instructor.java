@@ -936,8 +936,9 @@ public class Instructor {
             String qtext = ip.nextLine();
             
             //Right now we only allow the instructor to add 4 options
-            System.out.println("Please enter 4 options. After entering each option press Enter.");
-            for(int i = 0; i < 4; i++) {
+            System.out.println("Please enter number of options. After entering each option press Enter.");
+            int numOptions = Integer.parseInt(ip.nextLine());
+            for(int i = 0; i < numOptions; i++) {
                 qtext += "\n" + String.valueOf((char)(97 + i)) + ") " + ip.nextLine();
             }
             
