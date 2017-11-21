@@ -232,6 +232,7 @@ public class TA{
 	public static void enrollStudent(Scanner ip,int course, int studentid) {
 		System.out.println("1. Enter Student Id for enrollment");
 		int id=ip.nextInt();
+		if(id!=studentid) {
 		 String checkIfUgStudent = " select count(*) as ug_student from ug where student_id="+id;
 		 String addUgStudent="Insert into ug_enrolled (student_id,course_id) values ("+id+","+course+")";
 		 String checkIfPgStudent = " select count(*) as pg_student from pg where student_id="+id;
@@ -261,6 +262,7 @@ public class TA{
 	          //	e.printStackTrace();
 			 System.out.println("No such student exists or the student has already been enrolled!!");
 	          }
+		
 		 System.out.println("Press 0 to go back");
 		 int x=ip.nextInt();
 		 if(x==0) {
@@ -274,6 +276,18 @@ public class TA{
 			 return;
 			 
 		 }
+		}
+		
+		else {
+			System.out.println("Invalid student id");
+			 System.out.println("Press 0 to go back");
+			 int x=ip.nextInt();
+			 if(x==0) {
+				 enrollDropStudent(ip,course,studentid);
+				 return;
+			 }
+			
+		}
 		
 	}
 	
