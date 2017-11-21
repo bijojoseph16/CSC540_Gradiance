@@ -453,9 +453,12 @@ public class Student {
 					Map<String, String> q_det = new HashMap<String, String>();
 					
 					//show question 
-					if(qBank.get(level).isEmpty()) {
+					if(!qBank.containsKey(level)) {
 						System.out.println("Not sufficient questions available for desired level. Exiting the exercise");
 						break;	
+					}else if(qBank.get(level).isEmpty()){
+						System.out.println("Not sufficient questions available for desired level. Exiting the exercise");
+						break;
 					}else {
 						curQ = qBank.get(level).iterator().next();
 						System.out.println(q_cnt + ") " + curQ.get("TEXT"));
