@@ -19,6 +19,14 @@ public class Queries{
 	static final String getStudentByUId = " select * from student where student_id=? ";
 	static final String checkIfUgStudent = " select count(*) as \"ug_student\" from ug where student_id=?";
 
+	static final String getInstructorbyCourseid = "select p.firstname as fname, p.lastname as lname "
+			+ "from professor p, course c, professor_creates_course pcc "
+			+ "where p.professor_id = pcc.professor_id and c.c_id = ? and pcc.course_id = c.c_id";
+	
+	static final String getTAbyCourseid = "select s.firstname as fname, s.lastname as lname "
+			+ "from student s, pg p, course c "
+			+ "where s.student_id = p.student_id and c.c_id = ? and p.ta_course = c.c_id";
+	
 	//QUery to check if the UG student details entered during enrollment are correct
 	static final String checkIfUgStudentGivenName = " select count(*) as \"ug_student\" from ug u, student s where u.student_id=?"
 	        + " and u.student_id = s.student_id and s.firstname=? and s.lastname=?";
@@ -126,8 +134,16 @@ public class Queries{
 
     //Query to show all courses created by Instructor
     static final String viewCoursesCreated = "Select C.course_id from Course C, Professor_creates_course P where C.c_id = P.course_id and P.professor_id = ?";
+    //Query to fetch the maximum course added
+    static final String countOfCourses = "select max(e.C_ID) as \"maxCourseNum\" from course e";
+    //getavailable topics for the course
+    static final String getTopicIdsForCourse = "select topic_id, topic_name from topic minus select distinct t.topic_id,t.topic_name "
+    											+ "from topic t, course_has_topic cht where cht.course_id = ? and t.topic_id = cht.topic_id" ;
+    //Adding topic to course
+    static final String addTopicToCourse = "insert into course_has_topic (course_id, topic_id) values (?,?)";
+    
     //Query to add course
-    static final String addCourse = "Insert into course (course_id, course_name,course_level,max_students) values (?,?,?,?)";
+    static final String addCourse = "Insert into course (course_id, course_name,c_id,course_level,max_students) values (?,?,?,?,?)";
     //static final String addCourseDuration = "Insert into course_has_duration(course_id, start_date, end_date)"
     //        + " values(?, to_date('?','YYYY-MM-DD HH24:MI:SS'),to_date('?','YYYY-MM-DD HH24:MI:SS')";
     
