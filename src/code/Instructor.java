@@ -1056,7 +1056,7 @@ public class Instructor {
             
             else if(qtype == 1) {
                 System.out.println("You selected parametrized question.Please enter parameters");
-                System.out.println("Enter combinations of parameters for the question (max3): ");
+                System.out.println("Enter combinations of parameters for the question: ");
                 paramID = 1;
                 int paramIDIndex = Integer.parseInt(ip.nextLine());
                                 
