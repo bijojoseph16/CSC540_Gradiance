@@ -198,12 +198,35 @@ public class Student {
 	//show studentCourseHW
 	public static void showCourseHW(Scanner ip, int studentId, int courseId) {
 		
+		
+		
+		
+		try {
+			PreparedStatement psIns;
+			psIns = Connect.getConnection().prepareStatement(Queries.getInstructorbyCourseid);
+			psIns.setInt(1, courseId);
+			ResultSet rsIns = psIns.executeQuery();
+			rsIns.next();
+			System.out.println("Instructor for this course is " + rsIns.getString("fname") + " " + rsIns.getString("lname"));
+			
+			PreparedStatement psTa;
+			psTa = Connect.getConnection().prepareStatement(Queries.getTAbyCourseid);
+			psTa.setInt(1, courseId);
+			ResultSet rsTa = psTa.executeQuery();
+			while(rsTa.next())
+			System.out.println("TA for this course is " + rsTa.getString("fname") + " " + rsTa.getString("lname"));
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		System.out.println("***************** Student HW options ******************");
 		System.out.println("0. Go Back");
 		System.out.println("1. Current Open HW");
 		System.out.println("2. Past Closed HW");
 		System.out.println("Choice: ");
-		
 		int choice = ip.nextInt();
 		
 		if(choice == 0) {

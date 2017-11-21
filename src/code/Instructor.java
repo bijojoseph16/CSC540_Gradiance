@@ -464,28 +464,68 @@ public class Instructor {
          ResultSet rsGetCourseByC_ID = null;
          PreparedStatement psAddDuration = null;
          
+         PreparedStatement getMaxCourseId = null;
+         ResultSet rsgetMaxCourseId = null;
+         
          ip.nextLine();
          try {
-             
+           
+        	  
+        	  getMaxCourseId =  Connect.getConnection().prepareStatement(Queries.countOfCourses);
+        	  rsgetMaxCourseId = getMaxCourseId.executeQuery();
+        	  rsgetMaxCourseId.next();
+        	  
+        	  int valCId = rsgetMaxCourseId.getInt("maxCourseNum") + 1;
+        	  System.out.println("Auto generated Id for course is " + valCId);
+        	  
            System.out.println("Enter CourseID:");
            String courseID = ip.nextLine();
 
            System.out.println("Course Name:");
            String courseName = ip.nextLine();
- 
+           
            System.out.println("Enter CourseLevel (Grad/Undergrad):");
            String courseLevel = ip.nextLine();
            
            System.out.println("Enter maximum number of students:");
            String maxStudents = ip.nextLine();
            
+           
            psAddCourse = Connect.getConnection().prepareStatement(Queries.addCourse);
            psAddCourse.setString(1, courseID);
            psAddCourse.setString(2,courseName);
-           psAddCourse.setString(3, courseLevel);
-           psAddCourse.setInt(4, Integer.parseInt(maxStudents));
+           psAddCourse.setInt(3,valCId);
+           psAddCourse.setString(4, courseLevel);
+           psAddCourse.setInt(5, Integer.parseInt(maxStudents));
            psAddCourse.executeQuery();
                       
+           
+           System.out.println("Adding topics for this course ");
+           while(true) {
+        	   	
+        	   	System.out.println("Enter a topic from the following list");
+        	   	PreparedStatement avlTopic = Connect.getConnection().prepareStatement(Queries.getTopicIdsForCourse);
+        	   	avlTopic.setInt(1, valCId);
+        	   	showResultsSet(avlTopic.executeQuery());
+        	   	int topicId = ip.nextInt();
+        	   	PreparedStatement psEx = Connect.getConnection().prepareStatement(Queries.addTopicToCourse);
+        	   	psEx.setInt(1, valCId);
+        	   	psEx.setInt(2, topicId);
+        	   	psEx.executeQuery();
+        	   	ip.nextLine();
+        	   	System.out.println("Do you want to add more topics (y/n)");
+        	   	
+        	   	String input = ip.nextLine();
+        	   	
+        	   	if(input.equals("y")) {
+        	   		continue;
+        	   	}else {
+        	   		break;
+        	   	}
+        	   		
+           }
+           
+           
            //Ask date to satisfy the default format requirement
            //Default: YYYY-MM-DD 
            System.out.println("Enter Course Start Date(yyyy-mm-dd):");
@@ -498,6 +538,7 @@ public class Instructor {
            psDurationExists.setDate(2, java.sql.Date.valueOf(endDate));
            rsDurationExists = psDurationExists.executeQuery();
            rsDurationExists.next();
+           
            if(0 == rsDurationExists.getInt("duration_exists")) {
              psAddDuration = Connect.getConnection().prepareStatement(Queries.addDuration);
              psAddDuration.setDate(1, java.sql.Date.valueOf(startDate));
@@ -516,7 +557,7 @@ public class Instructor {
            rsGetCourseByC_ID = psGetCourseByC_ID.executeQuery();
            rsGetCourseByC_ID.next();
            
-           //After a course has been added to course table and duration added to duratio table
+           //After a course has been added to course table and duration added to duration table
            //Add c_id and duration to course has duration. If this is not followed 
            //there will be integrity constraint violations.
            int cID = rsGetCourseByC_ID.getInt("c_ID");
@@ -555,12 +596,13 @@ public class Instructor {
            }while (choice != 0);
            
          } catch (SQLException e) {
-             //e.printStackTrace();
+             e.printStackTrace();
              System.out.println("Could not insert Course, Press Enter to try again");
              Instructor.viewOrAddCourse(ip, instructorID);
              return;
              
          } catch (Exception e) {
+        	 	e.printStackTrace();
              System.out.println("Could not insert Course, Press Enter to try again");
              Instructor.viewOrAddCourse(ip, instructorID);
              return;
@@ -1703,18 +1745,19 @@ public class Instructor {
   			
   			
   			
-  			//Enter points for incorrct aswer
+  			//Enter points for incorrect answer
   			int ptIncorr = 0;
   			while(true) {
 	  			
-  				System.out.println("Enter Points for Incorrect Answer (a negative number eg. -1) or 0 to Go Back");
-  				ptIncorr = ip.nextInt();
+  				System.out.println("Enter Points for Incorrect Answer (add 0 or negative number eg. -1) or g to Go Back");
+  				String ptIncorrS = ip.nextLine();
+  				//ptIncorr = ip.nextInt();
 	  			
-	  			if(ptIncorr == 0) {
+	  			if(ptIncorrS.equalsIgnoreCase("g")) {
 	  				Instructor.viewExercise(ip, c_id, instructor_id);
 	  				return;
 	  			}
-	  			
+	  			ptIncorr = Integer.parseInt(ptIncorrS);
 	  			if(ptIncorr > 0 || (-1)*ptIncorr >= ptCorr) {
 	  				System.out.println("Invalid Input. Re-enter");
 	  				continue;
@@ -1755,7 +1798,7 @@ public class Instructor {
   			int retries = 0;
   			while(true) {
 	  			
-  				System.out.println("Enter the no. of retries between [1,2147483647] (eg. 3) or 0 to Go Back");
+  				System.out.println("Enter the no. of tries between [1,2147483647] (eg. 3) or 0 to Go Back");
   				retries = ip.nextInt();
 	  			
 	  			if(retries == 0) {
