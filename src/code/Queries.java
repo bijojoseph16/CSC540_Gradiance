@@ -52,7 +52,7 @@ public class Queries{
 			+ "and c1.course_id = p1.course_id and sse.ex_id = e.ex_id and sse.student_id = p1.student_id and p1.student_id=? and p1.course_id=?)) as retries_left "
 			+ "from exercise e, course_has_exercise c, enrollments p, exercise_has_duration exd "
 			+ "where e.ex_id = c.exercise_id and c.course_id = p.course_id and p.student_id=? and p.course_id=?"
-			+ "and e.ex_id = exd.ex_id and exd.startdate < to_timestamp(sysdate) and exd.enddate > to_timestamp(sysdate)";
+			+ "and e.ex_id = exd.ex_id and exd.startdate <= to_timestamp(sysdate) and exd.enddate >= to_timestamp(sysdate)";
 
 	static final String getStudentScoreQuery = "DECLARE  " + 
 			"   ss_policy varchar(20); " + 
@@ -98,7 +98,7 @@ public class Queries{
 	static final String fetchExQuestions = "select ehq.question_id, q.text, p.parameters, p.answer, q.solution, q.question_level, q.hint "
 			+ "from exercise_has_question ehq, question q, parameter p "
 			+ "where ehq.ex_id=? and ehq.question_id = q.question_id and q.question_id = p.question_id "
-			+ "and (p.param_id = (select floor(dbms_random.value(1,4)) as num from dual) or p.param_id = 0)";	
+			+ "and (p.param_id = (select floor(dbms_random.value(1,3)) as num from dual) or p.param_id = 0)";	
 	
 	static final String fetchAdaptiveExQuestions = "select ehq.question_id, q.text, p.parameters, p.answer, q.solution, q.question_level, q.hint "
 			+ "from ex_has_ques ehq, question q, parameter p "
