@@ -68,78 +68,114 @@ public class TA{
 		System.out.println("Please enter Course ID (1,2,3,4): ");
 		int courseinput=ip.nextInt();
 		
-		String getcourseinfo="Select * from course where c_id="+courseinput;
-		String getcoursesd="Select * from course_has_duration where course_id="+courseinput;
-		 
-		try {
-	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(getcourseinfo);
-	          ResultSet rs=pstmt.executeQuery();
-	          
-	          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(getcoursesd);
-	          ResultSet rs2=pstmt2.executeQuery();
-	          
-	          if (!rs.isBeforeFirst() ) {    
-	        	    System.out.println("Invalid course input!!, press 0 to go back"); 
-	        	    flag=1;
-	        	    
-	        	    int iv=ip.nextInt();
-	        	    
-	        	    if(iv==0) {
-	        	    	showHomePage(ip,studentid);
-	        	    	return;
-	        	    }
-	        	    else {
-	        	    	System.out.println("Invalid input");
-	        	    	showCourse(ip,studentid);
-	        	    	return;
-	        	    }
-	        	}
-	         while(rs.next()) {
-		        	 System.out.println("1.Course Name: ");
-		        	 System.out.println(rs.getString("course_name"));
-		        	 if(rs.wasNull()) {
-		        		 System.out.println("Invalid course id");
-		        	 }
-		        	
-	         }
-	         
-	         while(rs2.next()) {
-				System.out.println("2.Start Date: ");
-				System.out.println(rs2.getString("start_date"));
-				System.out.println("3. End Date: ");
-				System.out.println(rs2.getString("end_date"));			
-			 }
-	         
-	         
-		 }
-		 catch(SQLException e) {
-	          	e.printStackTrace();
-	          	
-			
-	          }
-			if(flag==0) {
-		 	System.out.println("4. View Exercise");
-			System.out.println("5. Enroll/Drop a Student");
-			System.out.println("6. View Report");
-			System.out.println("0. Go Back");
-			int option=ip.nextInt();
-			
-			switch(option) {
-			case 0: TA.showHomePage(ip,studentid);
-					return;
-			case 4: TA.viewExercise(ip,studentid,courseinput);
-					return;
-			case 5: TA.enrollDropStudent(ip,courseinput,studentid); 
-					return;
-			case 6: TA.viewReport(ip,courseinput,studentid);
-					return;
-			default:System.out.println("Invalid Input. Try Again"); 
-				showCourse(ip,studentid);
-				return;
+		String validCourse= "Select TA_COURSE as tacourse from PG where Student_id="+studentid;
 		
+		int flag2=0;
+		
+		try {
+			PreparedStatement pstmt1=Connect.getConnection().prepareStatement(validCourse);
+	        ResultSet rs1=pstmt1.executeQuery();
+	        
+	        while(rs1.next()) {
+	        	 if(rs1.getString("tacourse").equals(String.valueOf(courseinput))) {
+	        		 flag2=1;
+	        		 String getcourseinfo="Select * from course where c_id="+courseinput;
+	        			String getcoursesd="Select * from course_has_duration where course_id="+courseinput;
+	        			 
+	        			try {
+	        		          PreparedStatement pstmt=Connect.getConnection().prepareStatement(getcourseinfo);
+	        		          ResultSet rs=pstmt.executeQuery();
+	        		          
+	        		          PreparedStatement pstmt2=Connect.getConnection().prepareStatement(getcoursesd);
+	        		          ResultSet rs2=pstmt2.executeQuery();
+	        		          
+	        		          if (!rs.isBeforeFirst() ) {    
+	        		        	    System.out.println("Invalid course input!!, press 0 to go back"); 
+	        		        	    flag=1;
+	        		        	    
+	        		        	    int iv=ip.nextInt();
+	        		        	    
+	        		        	    if(iv==0) {
+	        		        	    	showHomePage(ip,studentid);
+	        		        	    	return;
+	        		        	    }
+	        		        	    else {
+	        		        	    	System.out.println("Invalid input");
+	        		        	    	showCourse(ip,studentid);
+	        		        	    	return;
+	        		        	    }
+	        		        	}
+	        		         while(rs.next()) {
+	        			        	 System.out.println("1.Course Name: ");
+	        			        	 System.out.println(rs.getString("course_name"));
+	        			        	 if(rs.wasNull()) {
+	        			        		 System.out.println("Invalid course id");
+	        			        	 }
+	        			        	
+	        		         }
+	        		         
+	        		         while(rs2.next()) {
+	        					System.out.println("2.Start Date: ");
+	        					System.out.println(rs2.getString("start_date"));
+	        					System.out.println("3. End Date: ");
+	        					System.out.println(rs2.getString("end_date"));			
+	        				 }
+	        		         
+	        		         
+	        			 }
+	        			 catch(SQLException e) {
+	        		          	e.printStackTrace();
+	        		          	
+	        				
+	        		          }
+	        				if(flag==0) {
+	        			 	System.out.println("4. View Exercise");
+	        				System.out.println("5. Enroll/Drop a Student");
+	        				System.out.println("6. View Report");
+	        				System.out.println("0. Go Back");
+	        				int option=ip.nextInt();
+	        				
+	        				switch(option) {
+	        				case 0: TA.showHomePage(ip,studentid);
+	        						return;
+	        				case 4: TA.viewExercise(ip,studentid,courseinput);
+	        						return;
+	        				case 5: TA.enrollDropStudent(ip,courseinput,studentid); 
+	        						return;
+	        				case 6: TA.viewReport(ip,courseinput,studentid);
+	        						return;
+	        				default:System.out.println("Invalid Input. Try Again"); 
+	        					showCourse(ip,studentid);
+	        					return;
+	        			
+	        			}
+	        			
+	        				}
+	        	  
+	        		 
+	          }
+	        }
 		}
 		
+		catch(SQLException e) {
+          	e.printStackTrace();
+          	
+			
+          }
+		
+		if(flag2==0) {
+			System.out.println("You do not have access to this course");
+			System.out.println("Press 0 to go back");
+			
+			int i=ip.nextInt();
+			
+			if(i==0) {
+				showCourse(ip,studentid);
+				return;
 			}
+		}
+		return;
+		
 		
 		
 	}
@@ -232,62 +268,88 @@ public class TA{
 	public static void enrollStudent(Scanner ip,int course, int studentid) {
 		System.out.println("1. Enter Student Id for enrollment");
 		int id=ip.nextInt();
-		if(id!=studentid) {
-		 String checkIfUgStudent = " select count(*) as ug_student from ug where student_id="+id;
-		 String addUgStudent="Insert into ug_enrolled (student_id,course_id) values ("+id+","+course+")";
-		 String checkIfPgStudent = " select count(*) as pg_student from pg where student_id="+id;
-		 String addPgStudent="Insert into pg_enrolled (student_id,course_id) values ("+id+","+course+")";
+		 String getTAOfCourse ="Select S.student_id as stid from Student S where S.student_id in (Select P.student_id from pg P where P.ta_course ="+course+")"; 
 		 try {
-	          PreparedStatement pstmt=Connect.getConnection().prepareStatement(checkIfUgStudent);
-	          ResultSet rs=pstmt.executeQuery();
-	         while(rs.next()) {
-	          if(rs.getString("ug_student").equals("1")) {
-	        	  PreparedStatement pstmt2=Connect.getConnection().prepareStatement(addUgStudent);
-		          ResultSet rs2=pstmt2.executeQuery();
-		          System.out.println("Undergrad Student enrolled");
-	 		 }
-	          else {
-	        	  PreparedStatement pstmt3=Connect.getConnection().prepareStatement(checkIfPgStudent);
-		          ResultSet rs3=pstmt3.executeQuery();
-		          while(rs3.next()) {
-		        	  PreparedStatement pstmt4=Connect.getConnection().prepareStatement(addPgStudent);
-			          ResultSet rs4=pstmt4.executeQuery();
-		          System.out.println("Postgrad Student enrolled");
-		          }
-	          }
+	          PreparedStatement pstmt1=Connect.getConnection().prepareStatement(getTAOfCourse);
+	          ResultSet rs1=pstmt1.executeQuery();
+	          int flag=0;
 	          
-		 }
-		 }
-		 catch(SQLException e) {
-	          //	e.printStackTrace();
-			 System.out.println("No such student exists or the student has already been enrolled!!");
+	          while(rs1.next()) {
+	        	  if(rs1.getString("stid").equals(String.valueOf(id))) {
+	        		  flag=1;
+	        		  System.out.println("Invalid student id");
+	     			 System.out.println("Press 0 to go back");
+	     			 int x=ip.nextInt();
+	     			 if(x==0) {
+	     				 enrollDropStudent(ip,course,studentid);
+	     				 return;
+	     			 		}
+	        	  
 	          }
-		
-		 System.out.println("Press 0 to go back");
-		 int x=ip.nextInt();
-		 if(x==0) {
-			 enrollDropStudent(ip,course,studentid);
-			 return;
+	          }
+	        	 if(flag==0) { 
+	        	  
+	        		  
+	        				 String checkIfUgStudent = " select count(*) as ug_student from ug where student_id="+id;
+	        				 String addUgStudent="Insert into ug_enrolled (student_id,course_id) values ("+id+","+course+")";
+	        				 String checkIfPgStudent = " select count(*) as pg_student from pg where student_id="+id;
+	        				 String addPgStudent="Insert into pg_enrolled (student_id,course_id) values ("+id+","+course+")";
+	        				 try {
+	        			          PreparedStatement pstmt=Connect.getConnection().prepareStatement(checkIfUgStudent);
+	        			          ResultSet rs=pstmt.executeQuery();
+	        			         while(rs.next()) {
+	        			          if(rs.getString("ug_student").equals("1")) {
+	        			        	  PreparedStatement pstmt2=Connect.getConnection().prepareStatement(addUgStudent);
+	        				          ResultSet rs2=pstmt2.executeQuery();
+	        				          System.out.println("Undergrad Student enrolled");
+	        			 		 }
+	        			          else {
+	        			        	  PreparedStatement pstmt3=Connect.getConnection().prepareStatement(checkIfPgStudent);
+	        				          ResultSet rs3=pstmt3.executeQuery();
+	        				          while(rs3.next()) {
+	        				        	  PreparedStatement pstmt4=Connect.getConnection().prepareStatement(addPgStudent);
+	        					          ResultSet rs4=pstmt4.executeQuery();
+	        				          System.out.println("Grad Student enrolled");
+	        				          }
+	        			          }
+	        			          
+	        				 }
+	        				 }
+	        				 catch(SQLException e) {
+	        			          //	e.printStackTrace();
+	        					 System.out.println("No such student exists or the student has already been enrolled!!");
+	        			          }
+	        				
+	        				 System.out.println("Press 0 to go back");
+	        				 int x=ip.nextInt();
+	        				 if(x==0) {
+	        					 enrollDropStudent(ip,course,studentid);
+	        					 return;
+	        				 }
+	        				 
+	        				 else {
+	        					 System.out.println("Invalid Input. Try Again"); 
+	        					 enrollStudent(ip,course,studentid);
+	        					 return;
+	        					 
+	        				 }
+	        				
+	        				
+	        				
+	        					
+	        				
+	        	  }
+	          
+		 
 		 }
 		 
-		 else {
-			 System.out.println("Invalid Input. Try Again"); 
-			 enrollStudent(ip,course,studentid);
-			 return;
-			 
-		 }
-		}
+		 catch(SQLException e) {
+	          e.printStackTrace();
+			// System.out.println("No such student exists or the student has already been enrolled!!");
+	          }
+		 
+		 
 		
-		else {
-			System.out.println("Invalid student id");
-			 System.out.println("Press 0 to go back");
-			 int x=ip.nextInt();
-			 if(x==0) {
-				 enrollDropStudent(ip,course,studentid);
-				 return;
-			 }
-			
-		}
 		
 	}
 	
@@ -307,7 +369,7 @@ public class TA{
 	          ResultSet rs=pstmt.executeQuery();
 	          
 	         while(rs.next()) {
-	          if(rs.getString("ug_student").equals("1")) {
+	          if(Integer.parseInt(rs.getString("ug_student"))==1) {
 	        	  flagug=1;
 	        	  PreparedStatement pstmt2=Connect.getConnection().prepareStatement(deleteUgStudent);
 		          ResultSet rs2=pstmt2.executeQuery();
@@ -319,11 +381,11 @@ public class TA{
 		          ResultSet rs3=pstmt3.executeQuery();
 		          
 		          while(rs3.next()) {
-		        	  if(rs3.getString("pg_student").equals("1")) {
+		        	  if(Integer.parseInt(rs3.getString("pg_student"))>=1) {
 		        	  flagpg=1;
 		        	  PreparedStatement pstmt4=Connect.getConnection().prepareStatement(deletePgStudent);
 			          ResultSet rs4=pstmt4.executeQuery();
-		          System.out.println("Postgrad Student deleted");
+		          System.out.println("Grad Student deleted");
 		          }
 		          }
 	          }
