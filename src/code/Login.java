@@ -71,7 +71,7 @@ public class Login {
 		        	ResultSet results = ps.executeQuery();	
 		        results.next();
 		        	int i=results.getInt("ta_exists");
-		        	if(i==1)
+		        	if(i>=1)
 		        	{
 		        	 	System.out.println("TA -  Username and Password exists");
 		        		PreparedStatement psInst=Connect.getConnection().prepareStatement(Queries.getTAByUIdPass);
