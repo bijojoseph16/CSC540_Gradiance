@@ -677,6 +677,7 @@ public class Instructor {
                }
            }
            else if(1 <= rsPGStudent.getInt("pg_student")) {
+               System.out.println("PG student enrollment");
                try {
                  psEnrollPGStudent = Connect.getConnection().prepareStatement(Queries.enrollPGStudent);
                  psEnrollPGStudent.setInt(1, studentID);
@@ -2115,7 +2116,7 @@ public class Instructor {
             rsIsPG = psIsPG.executeQuery();
             rsIsPG.next();
 
-            if(1 == rsIsPG.getInt("pg_student")) {
+            if(1 <= rsIsPG.getInt("pg_student")) {
                 try {
                   psAddTA = Connect.getConnection().prepareStatement(Queries.addTA);
                   psAddTA.setInt(1, studentID);
