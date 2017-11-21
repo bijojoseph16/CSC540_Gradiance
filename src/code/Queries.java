@@ -324,6 +324,7 @@ public class Queries{
     static final String insertDuration = "insert into duration values (?,? )";
     static final String insertExDuration = "insert into exercise_has_duration values (?,?,? )";
     static final String insertExCourseRelation = "insert into course_has_exercise values (?,?)";
+    static final String insertExInstrRelation = "insert into professor_creates_exercise values (?,?)";
     static final String insertExQuestionRelation = "insert into exercise_has_question values (?,?)";
     
     static final String insertExQuestion = "insert into exercise_has_question values (?,?)";

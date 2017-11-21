@@ -1990,6 +1990,12 @@ public class Instructor {
   			ps3.setInt(2, newExId);
   			ps3.executeQuery();
   			
+  		//insert statement to define exercise course relationship
+  			ps7 = Connect.getConnection().prepareStatement(Queries.insertExInstrRelation);
+  			ps7.setInt(1, newExId);
+  			ps7.setInt(2, instructor_id);
+  			ps7.executeQuery();
+  			
   			System.out.println("Exercise Updated in the database... Returning");
   			Instructor.viewExercise(ip, c_id, instructor_id);
   			
